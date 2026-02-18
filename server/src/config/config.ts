@@ -33,7 +33,8 @@ const config: AppConfig = {
     clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
     // Must match exactly what you add in Discord Developer Portal → OAuth2 → Redirects (no trailing slash)
     redirectUri: (process.env.DISCORD_REDIRECT_URI || 'http://localhost:3000/api/auth/discord/callback').replace(/\/+$/, ''),
-    frontendUrl: (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, ''),
+    // CORS: set to the URL users use to open the app (e.g. http://87.106.23.37). Required for production.
+    frontendUrl: (process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'http://localhost:5173').replace(/\/+$/, ''),
     // Optional: require Discord role to log in. Bot must be in the guild. Enable guilds.members.read in Discord Portal.
     guildId: process.env.DISCORD_GUILD_ID || undefined,
     accessRoleId: process.env.DISCORD_ACCESS_ROLE_ID || undefined,
