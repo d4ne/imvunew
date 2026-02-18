@@ -261,12 +261,20 @@ export default function AdminImvuAccounts() {
           <div className="content-card">
             <form
               onSubmit={handleTryLogin}
-              className="ad-form"
               autoComplete="off"
-              style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 'var(--space-4, 1rem)', width: '100%' }}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'flex-end',
+                gap: 16,
+                width: '100%',
+              }}
             >
-              <div className="ad-field" style={{ flex: '1 1 200px', minWidth: 150 }}>
-                <label htmlFor="try-username" className="ad-label">
+              <div style={{ flex: '1 1 200px', minWidth: 150, marginBottom: 0 }}>
+                <label
+                  htmlFor="try-username"
+                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}
+                >
                   IMVU username
                 </label>
                 <input
@@ -276,13 +284,27 @@ export default function AdminImvuAccounts() {
                   autoComplete="off"
                   value={tryUsername}
                   onChange={(e) => setTryUsername(e.target.value)}
-                  className="ad-input"
                   placeholder="Username"
                   disabled={tryLoginLoading}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    minHeight: 40,
+                    padding: '8px 12px',
+                    fontSize: 16,
+                    color: '#f4f4f5',
+                    backgroundColor: '#27272a',
+                    border: '1px solid #3f3f46',
+                    borderRadius: 8,
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
-              <div className="ad-field" style={{ flex: '1 1 200px', minWidth: 150 }}>
-                <label htmlFor="try-password" className="ad-label">
+              <div style={{ flex: '1 1 200px', minWidth: 150, marginBottom: 0 }}>
+                <label
+                  htmlFor="try-password"
+                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}
+                >
                   Password
                 </label>
                 <input
@@ -292,13 +314,41 @@ export default function AdminImvuAccounts() {
                   autoComplete="new-password"
                   value={tryPassword}
                   onChange={(e) => setTryPassword(e.target.value)}
-                  className="ad-input"
                   placeholder="Password"
                   disabled={tryLoginLoading}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    minHeight: 40,
+                    padding: '8px 12px',
+                    fontSize: 16,
+                    color: '#f4f4f5',
+                    backgroundColor: '#27272a',
+                    border: '1px solid #3f3f46',
+                    borderRadius: 8,
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
-              <div className="ad-actions" style={{ flex: '0 0 auto', display: 'flex', visibility: 'visible' }}>
-                <button type="submit" disabled={tryLoginLoading} className="ad-btn" style={{ display: 'inline-block', visibility: 'visible' }}>
+              <div style={{ flex: '0 0 auto' }}>
+                <button
+                  type="submit"
+                  disabled={tryLoginLoading}
+                  style={{
+                    display: 'inline-block',
+                    minWidth: 120,
+                    minHeight: 40,
+                    padding: '10px 20px',
+                    backgroundColor: '#8b5cf6',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: 16,
+                    fontWeight: 600,
+                    cursor: tryLoginLoading ? 'wait' : 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >
                   {tryLoginLoading ? 'Trying…' : 'Try login'}
                 </button>
               </div>
