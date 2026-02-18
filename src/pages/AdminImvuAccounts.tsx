@@ -273,7 +273,7 @@ export default function AdminImvuAccounts() {
               <div style={{ flex: '1 1 200px', minWidth: 150, marginBottom: 0 }}>
                 <label
                   htmlFor="try-username"
-                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'var(--text-secondary, #a1a1aa)' }}
+                  style={{ display: 'block', marginBottom: '0.25rem', fontSize: 'var(--text-base, 0.8125rem)', fontWeight: 'var(--font-medium, 500)', color: 'var(--text-secondary, #a1a1aa)' }}
                 >
                   IMVU username
                 </label>
@@ -289,9 +289,9 @@ export default function AdminImvuAccounts() {
                   style={{
                     display: 'block',
                     width: '100%',
-                    minHeight: 40,
-                    padding: '8px 12px',
-                    fontSize: 16,
+                    minHeight: 'var(--input-height, 2.25rem)',
+                    padding: 'var(--space-2, 0.5rem) var(--space-3, 0.75rem)',
+                    fontSize: 'var(--text-md, 0.875rem)',
                     color: 'var(--text-primary, #f4f4f5)',
                     backgroundColor: 'var(--bg-tertiary, #141418)',
                     border: '1px solid var(--border, #222228)',
@@ -303,7 +303,7 @@ export default function AdminImvuAccounts() {
               <div style={{ flex: '1 1 200px', minWidth: 150, marginBottom: 0 }}>
                 <label
                   htmlFor="try-password"
-                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'var(--text-secondary, #a1a1aa)' }}
+                  style={{ display: 'block', marginBottom: '0.25rem', fontSize: 'var(--text-base, 0.8125rem)', fontWeight: 'var(--font-medium, 500)', color: 'var(--text-secondary, #a1a1aa)' }}
                 >
                   Password
                 </label>
@@ -319,9 +319,9 @@ export default function AdminImvuAccounts() {
                   style={{
                     display: 'block',
                     width: '100%',
-                    minHeight: 40,
-                    padding: '8px 12px',
-                    fontSize: 16,
+                    minHeight: 'var(--input-height, 2.25rem)',
+                    padding: 'var(--space-2, 0.5rem) var(--space-3, 0.75rem)',
+                    fontSize: 'var(--text-md, 0.875rem)',
                     color: 'var(--text-primary, #f4f4f5)',
                     backgroundColor: 'var(--bg-tertiary, #141418)',
                     border: '1px solid var(--border, #222228)',
@@ -336,15 +336,14 @@ export default function AdminImvuAccounts() {
                   disabled={tryLoginLoading}
                   style={{
                     display: 'inline-block',
-                    minWidth: 120,
-                    minHeight: 40,
-                    padding: '10px 20px',
+                    minHeight: 'var(--input-height, 2.25rem)',
+                    padding: '0.5rem 1rem',
                     backgroundColor: 'var(--accent, #6366f1)',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 'var(--radius, 8px)',
-                    fontSize: 16,
-                    fontWeight: 600,
+                    fontSize: 'var(--text-md, 0.875rem)',
+                    fontWeight: 'var(--font-semibold, 600)',
                     cursor: tryLoginLoading ? 'wait' : 'pointer',
                     fontFamily: 'inherit',
                   }}
