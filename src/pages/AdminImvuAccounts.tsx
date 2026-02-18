@@ -259,9 +259,11 @@ export default function AdminImvuAccounts() {
             </p>
           </header>
           <div className="content-card">
-            <form onSubmit={handleTryLogin} className="ad-form" autoComplete="off" style={{ display: 'block', maxWidth: 480 }}>
-              <div className="ad-field">
-                <label htmlFor="try-username" className="ad-label">IMVU username</label>
+            <form onSubmit={handleTryLogin} autoComplete="off" style={{ display: 'block', maxWidth: 480 }}>
+              <div style={{ marginBottom: 16 }}>
+                <label htmlFor="try-username" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}>
+                  IMVU username
+                </label>
                 <input
                   id="try-username"
                   name="username"
@@ -269,13 +271,26 @@ export default function AdminImvuAccounts() {
                   autoComplete="off"
                   value={tryUsername}
                   onChange={(e) => setTryUsername(e.target.value)}
-                  className="ad-input"
                   placeholder="IMVU username"
                   disabled={tryLoginLoading}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    minHeight: 40,
+                    padding: '8px 12px',
+                    fontSize: 16,
+                    color: '#f4f4f5',
+                    background: '#141418',
+                    border: '1px solid #222228',
+                    borderRadius: 8,
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
-              <div className="ad-field">
-                <label htmlFor="try-password" className="ad-label">Password</label>
+              <div style={{ marginBottom: 16 }}>
+                <label htmlFor="try-password" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}>
+                  Password
+                </label>
                 <input
                   id="try-password"
                   name="password"
@@ -283,9 +298,20 @@ export default function AdminImvuAccounts() {
                   autoComplete="new-password"
                   value={tryPassword}
                   onChange={(e) => setTryPassword(e.target.value)}
-                  className="ad-input"
                   placeholder="Password"
                   disabled={tryLoginLoading}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    minHeight: 40,
+                    padding: '8px 12px',
+                    fontSize: 16,
+                    color: '#f4f4f5',
+                    background: '#141418',
+                    border: '1px solid #222228',
+                    borderRadius: 8,
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
               <p style={{ marginTop: 16, marginBottom: 0 }}>
