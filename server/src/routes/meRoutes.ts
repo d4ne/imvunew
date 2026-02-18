@@ -1,7 +1,7 @@
 import express from 'express';
 import { getMe } from '../controllers/meController.js';
-import { requireAuth } from '../middleware/requireAuth.js';
+import { optionalAuth } from '../middleware/requireAuth.js';
 
 const router = express.Router();
-router.get('/', requireAuth, getMe);
+router.get('/', optionalAuth, getMe);
 export default router;

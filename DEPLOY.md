@@ -262,6 +262,31 @@ sudo ufw allow 'Nginx Full'
 sudo ufw enable
 ```
 
+### Updating the app (pull on VPS)
+
+After you push changes from your machine, on the VPS:
+
+```bash
+cd /var/www/imvuweb   # or your project path
+
+git pull
+
+# Reinstall deps if package.json / server/package.json changed
+npm ci
+cd server && npm ci && cd ..
+
+# Rebuild frontend (root .env already has VITE_API_URL for prod)
+npm run build
+
+# Rebuild and restart the API
+cd server
+npm run build
+pm2 restart xanoty-api
+cd ..
+```
+
+If you didn’t change dependencies, you can skip the `npm ci` steps and only run `npm run build`, `cd server && npm run build`, and `pm2 restart xanoty-api`.
+
 ---
 
 ## Checklist

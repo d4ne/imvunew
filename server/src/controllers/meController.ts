@@ -4,7 +4,7 @@ import asyncHandler from '../middleware/asyncHandler.js';
 export const getMe = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const user = req.user;
   if (!user) {
-    res.status(401).json({ success: false, error: { message: 'Not authenticated' } });
+    res.status(200).json({ success: true, user: null });
     return;
   }
   res.status(200).json({

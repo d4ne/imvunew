@@ -11,6 +11,22 @@ declare global {
   }
 }
 
+/** Sets req.user from JWT cookie when valid; never sends 401. Use for routes that work with or without a session (e.g. GET /api/me). */
+export function optionalAuth(req: Request, res: Response, next: NextFunction): void {
+  const token = req.cookies?.[config.jwt.cookieName];
+  if (!token) {
+    next();
+    return;
+  }
+  try {
+    const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
+    req.user = decoded;
+  } catch {
+    res.clearCookie(config.jwt.cookieName, { path: '/' });
+  }
+  next();
+}
+
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies?.[config.jwt.cookieName];
   if (!token) {
