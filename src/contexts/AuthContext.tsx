@@ -15,6 +15,7 @@ interface AuthContextType {
   loading: boolean;
   logout: () => void;
   setUser: (u: User | null) => void;
+  refetchUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -25,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = useCallback(async () => {
+  const fetchUser = useCallback(async (markLoadingDone = true) => {
     try {
       const res = await fetch(apiUrl('/api/me'), { credentials: 'include' });
       if (res.ok) {
@@ -37,12 +38,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       setUserState(null);
     } finally {
-      setLoading(false);
+      if (markLoadingDone) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     fetchUser();
+  }, [fetchUser]);
+
+  const refetchUser = useCallback(() => fetchUser(false), [fetchUser]);
+
+  // After OAuth redirect we land with ?auth=callback; refetch once so the session cookie is picked up, then clean the URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('auth') !== 'callback') return;
+    const t = setTimeout(() => {
+      fetchUser(false).then(() => {
+        const u = new URL(window.location.href);
+        u.searchParams.delete('auth');
+        const clean = u.searchParams.toString() ? `${u.pathname}?${u.searchParams}` : u.pathname;
+        window.history.replaceState(null, '', clean);
+      });
+    }, 50);
+    return () => clearTimeout(t);
   }, [fetchUser]);
 
   const setUser = useCallback((u: User | null) => {
@@ -58,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout, setUser }}>
+    <AuthContext.Provider value={{ user, loading, logout, setUser, refetchUser }}>
       {children}
     </AuthContext.Provider>
   );

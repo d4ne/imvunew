@@ -136,7 +136,8 @@ export const discordCallback = asyncHandler(async (req: Request, res: Response):
       .catch((e) => logger.warn(`Login webhook failed: ${e.response?.data?.message || e.message}`));
   }
 
-  res.redirect(frontendUrl);
+  const separator = frontendUrl.includes('?') ? '&' : '?';
+  res.redirect(`${frontendUrl}${separator}auth=callback`);
 });
 
 export const logout = asyncHandler(async (_req: Request, res: Response): Promise<void> => {
