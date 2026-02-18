@@ -15,6 +15,9 @@ app.use(
   helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
+    // Disable COOP so the header isn't sent on HTTP (non-localhost). Browsers ignore it on
+    // "untrustworthy" origins and show a console warning. Use HTTPS or localhost for COOP.
+    crossOriginOpenerPolicy: false,
   })
 );
 

@@ -80,6 +80,14 @@ imvuweb/
 └── README.md
 ```
 
+## Troubleshooting
+
+- **Cross-Origin-Opener-Policy (COOP) warning in console**  
+  The server does not send COOP when it would be ignored (e.g. over plain HTTP from a non-localhost origin). To avoid the warning, use **HTTPS** or open the app from **localhost**. For production, serve over HTTPS.
+
+- **`api/me` returns 401 (Unauthorized)**  
+  This is normal when you are **not logged in**. The app treats it as “no user” and shows the login flow. If you have already signed in with Discord and still see 401, ensure `VITE_API_URL` in the frontend `.env` matches the API origin (e.g. `http://localhost:3000`) so the session cookie is sent, and that `FRONTEND_URL` in `server/.env` matches where the frontend runs (e.g. `http://localhost:5173`) for CORS and redirects.
+
 ## Build
 
 ```bash
