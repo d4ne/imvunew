@@ -1,8 +1,15 @@
-const API_BASE = import.meta.env.VITE_API_URL ?? '';
+const raw = (import.meta.env.VITE_API_URL ?? '').trim();
+// Ignore misconfigured values (e.g. whole .env line pasted, or "VITE_API_URL=...")
+const API_BASE =
+  raw &&
+  !raw.includes('VITE_API_URL=') &&
+  (raw.startsWith('http://') || raw.startsWith('https://'))
+    ? raw.replace(/\/+$/, '')
+    : '';
 
 export function apiUrl(path: string): string {
   const p = path.startsWith('/') ? path : `/${path}`;
-  return API_BASE ? `${API_BASE.replace(/\/$/, '')}${p}` : p;
+  return API_BASE ? `${API_BASE}${p}` : p;
 }
 
 export async function fetchApi<T = unknown>(
