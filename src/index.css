@@ -330,45 +330,10 @@ input, select, textarea {
   padding: var(--space-6) var(--space-8);
   min-height: 60px;
 }
-
-/* Force form visibility everywhere (production fix: forms must never be hidden) */
-.page .content-card,
-.page .dashboard-section {
-  display: block !important;
-  visibility: visible !important;
-  overflow: visible !important;
+.page .content-card .ad-form {
+  display: block;
+  visibility: visible;
 }
-.page .content-card form,
-.page form {
-  display: block !important;
-  visibility: visible !important;
-}
-.page .ad-form {
-  display: block !important;
-  visibility: visible !important;
-}
-.page .ad-form .ad-field,
-.page .ad-form .ad-label,
-.page .ad-form .ad-hint,
-.page .ad-form .ad-input,
-.page .ad-form .ad-actions,
-.page .ad-form .ad-btn {
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-.page .ad-form .ad-input {
-  display: block !important;
-  width: 100% !important;
-  min-height: var(--input-height) !important;
-}
-.page .ad-form .ad-actions {
-  display: flex !important;
-  flex-wrap: wrap !important;
-}
-.page .ad-form .ad-actions .ad-btn {
-  display: inline-block !important;
-}
-
 .content-card p {
   font-size: var(--text-lg);
   font-weight: var(--font-normal);
