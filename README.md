@@ -102,6 +102,9 @@ imvuweb/
 
 ## Troubleshooting
 
+- **Admin sidebar / Blacklist not showing**  
+  The Admin section (and Blacklist) only appears for users with the Discord **admin** role. In `server/.env` set **`DISCORD_GUILD_ID`** (your Discord server ID) and **`DISCORD_ADMIN_ROLE_ID`** (e.g. `1473623350847995977`). Restart the API, then **log out and log in again** so a new session is created with `isAdmin` set from your roles. The Discord app must have the **guilds.members.read** OAuth2 scope (it is requested automatically when guild + admin role are set).
+
 - **Cross-Origin-Opener-Policy (COOP) warning in console**  
   The server does not send COOP when it would be ignored (e.g. over plain HTTP from a non-localhost origin). To avoid the warning, use **HTTPS** or open the app from **localhost**. For production, serve over HTTPS.
 

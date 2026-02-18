@@ -156,7 +156,7 @@ export default function Sidebar() {
             </ul>
           </div>
         ))}
-        {user?.isAdmin && (
+        {Boolean(user?.isAdmin) && (
           <div className="mb-7">
             <p className="sidebar-nav-section">Admin</p>
             <ul className="space-y-0.5">

@@ -32,7 +32,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch(apiUrl('/api/me'), { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
-        setUserState(data.user ?? null);
+        const u = data.user ?? null;
+        setUserState(u ? { ...u, isAdmin: Boolean(u.isAdmin) } : null);
       } else {
         setUserState(null);
       }
