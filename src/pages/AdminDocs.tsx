@@ -160,21 +160,36 @@ export default function AdminDocs() {
             </p>
           </header>
           <div className="content-card">
-            <form onSubmit={handleSubmit} className="ad-form">
+            <form onSubmit={handleSubmit} style={{ display: 'block', width: '100%' }}>
               <div className="ad-field">
-                <label htmlFor="doc-title" className="ad-label">Question</label>
+                <label htmlFor="doc-title" className="ad-label" style={{ display: 'block', marginBottom: '0.25rem', fontSize: 'var(--text-base, 0.8125rem)', fontWeight: 'var(--font-medium, 500)', color: 'var(--text-secondary, #a1a1aa)' }}>
+                  Question
+                </label>
                 <input
                   id="doc-title"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. How do I get started?"
-                  className="ad-input"
                   disabled={submitting}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    minHeight: 'var(--input-height, 2.25rem)',
+                    padding: 'var(--space-2, 0.5rem) var(--space-3, 0.75rem)',
+                    fontSize: 'var(--text-md, 0.875rem)',
+                    color: 'var(--text-primary, #f4f4f5)',
+                    backgroundColor: 'var(--bg-tertiary, #141418)',
+                    border: '1px solid var(--border, #222228)',
+                    borderRadius: 'var(--radius, 8px)',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
               <div className="ad-field">
-                <label htmlFor="doc-slug" className="ad-label">Slug (optional)</label>
+                <label htmlFor="doc-slug" className="ad-label" style={{ display: 'block', marginBottom: '0.25rem', fontSize: 'var(--text-base, 0.8125rem)', fontWeight: 'var(--font-medium, 500)', color: 'var(--text-secondary, #a1a1aa)' }}>
+                  Slug (optional)
+                </label>
                 <p className="ad-hint">For direct links. Auto-generated from question if empty.</p>
                 <input
                   id="doc-slug"
@@ -182,14 +197,27 @@ export default function AdminDocs() {
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   placeholder="e.g. getting-started"
-                  className="ad-input"
                   disabled={submitting}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    minHeight: 'var(--input-height, 2.25rem)',
+                    padding: 'var(--space-2, 0.5rem) var(--space-3, 0.75rem)',
+                    fontSize: 'var(--text-md, 0.875rem)',
+                    color: 'var(--text-primary, #f4f4f5)',
+                    backgroundColor: 'var(--bg-tertiary, #141418)',
+                    border: '1px solid var(--border, #222228)',
+                    borderRadius: 'var(--radius, 8px)',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
               <div className="ad-field">
-                <label htmlFor="doc-content" className="ad-label">Answer</label>
+                <label htmlFor="doc-content" className="ad-label" style={{ display: 'block', marginBottom: '0.25rem', fontSize: 'var(--text-base, 0.8125rem)', fontWeight: 'var(--font-medium, 500)', color: 'var(--text-secondary, #a1a1aa)' }}>
+                  Answer
+                </label>
                 <p className="ad-hint">Markdown: **bold**, *italic*, lists, [links](url), headings.</p>
-                <div data-color-mode="dark" className="faq-editor-wrap">
+                <div data-color-mode="dark" className="faq-editor-wrap" style={{ display: 'block', visibility: 'visible' }}>
                   <MDEditor
                     id="doc-content"
                     value={content}
@@ -202,12 +230,44 @@ export default function AdminDocs() {
                   />
                 </div>
               </div>
-              <div className="ad-actions">
-                <button type="submit" disabled={submitting} className="ad-btn">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2, 0.5rem)', marginTop: 'var(--space-4, 1rem)' }}>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  style={{
+                    display: 'inline-block',
+                    minHeight: 'var(--input-height, 2.25rem)',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: 'var(--accent, #6366f1)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 'var(--radius, 8px)',
+                    fontSize: 'var(--text-md, 0.875rem)',
+                    fontWeight: 'var(--font-semibold, 600)',
+                    cursor: submitting ? 'wait' : 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >
                   {submitting ? (editingId ? 'Saving…' : 'Adding…') : editingId ? 'Save changes' : 'Add question'}
                 </button>
                 {editingId && (
-                  <button type="button" onClick={clearForm} className="ad-btn ad-btn-cancel">
+                  <button
+                    type="button"
+                    onClick={clearForm}
+                    style={{
+                      display: 'inline-block',
+                      minHeight: 'var(--input-height, 2.25rem)',
+                      padding: '0.5rem 1rem',
+                      backgroundColor: 'transparent',
+                      color: 'var(--text-secondary, #a1a1aa)',
+                      border: '1px solid var(--border, #222228)',
+                      borderRadius: 'var(--radius, 8px)',
+                      fontSize: 'var(--text-md, 0.875rem)',
+                      fontWeight: 'var(--font-semibold, 600)',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                    }}
+                  >
                     Cancel
                   </button>
                 )}
