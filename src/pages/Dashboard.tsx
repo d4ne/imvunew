@@ -18,7 +18,7 @@ const quickIcons = {
 };
 
 const quickLinks = [
-  { to: '/image-logger', label: 'Image Logger', desc: 'Upload images and get tracking links with IP logging', icon: 'image' as const },
+  { to: '/image-logger', label: 'Image Logger', desc: 'Tracking links with IP logging', icon: 'image' as const },
   { to: '/booter', label: 'Booter', desc: 'Booter utilities', icon: 'zap' as const },
 ];
 
