@@ -294,13 +294,22 @@ export default function AdminImvuAccounts() {
                   />
                 </div>
               </div>
-              <button
-                type="submit"
-                disabled={tryLoginLoading}
-                className="ad-btn h-10 w-full sm:w-auto min-w-[8rem] flex items-center justify-center rounded-md font-medium"
-              >
-                {tryLoginLoading ? 'Trying…' : 'Try login'}
-              </button>
+              <div style={{ display: 'block', marginTop: 8 }}>
+                <button
+                  type="submit"
+                  disabled={tryLoginLoading}
+                  className="ad-btn"
+                  style={{
+                    display: 'inline-block',
+                    minWidth: 140,
+                    minHeight: 40,
+                    padding: '8px 16px',
+                    cursor: tryLoginLoading ? 'wait' : 'pointer',
+                  }}
+                >
+                  {tryLoginLoading ? 'Trying…' : 'Try login'}
+                </button>
+              </div>
             </form>
             {tryLoginResult && (
               <div className="mt-4 p-4 rounded bg-[var(--bg-secondary)] text-sm">
