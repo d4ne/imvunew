@@ -296,18 +296,34 @@ export default function AdminImvuAccounts() {
                 </div>
               </div>
             </form>
-            <div style={{ marginTop: 12, display: 'block' }}>
+            <div
+              style={{
+                marginTop: 16,
+                padding: 12,
+                border: '2px solid var(--accent, #8b5cf6)',
+                borderRadius: 8,
+                background: 'var(--bg-secondary, rgba(0,0,0,0.2))',
+              }}
+              data-try-login-area
+            >
               <button
                 type="submit"
                 form="try-login-form"
                 disabled={tryLoginLoading}
                 className="ad-btn"
+                data-try-login-btn
                 style={{
                   display: 'inline-block',
-                  minWidth: 140,
-                  minHeight: 44,
-                  padding: '10px 20px',
+                  minWidth: 160,
+                  minHeight: 48,
+                  padding: '12px 24px',
                   cursor: tryLoginLoading ? 'wait' : 'pointer',
+                  backgroundColor: 'var(--accent, #8b5cf6)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  fontSize: 16,
+                  fontWeight: 600,
                 }}
               >
                 {tryLoginLoading ? 'Trying…' : 'Try login'}
