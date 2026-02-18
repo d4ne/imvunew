@@ -1,0 +1,42 @@
+name: Discord Patch Notes (Every Push)
+
+on:
+  push:
+    branches:
+      - main   # change if your branch is called master
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord Embed Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          AUTHOR="${{ github.actor }}"
+          REPO="${{ github.repository }}"
+          COMMIT_URL="${{ github.event.head_commit.url }}"
+
+          curl -H "Content-Type: application/json" \
+          -d "{
+            \"username\": \"GitHub Actions\",
+            \"embeds\": [{
+              \"title\": \"🚀 Push Update Notification!\",
+              \"description\": \"New changes pushed to **$REPO**.\",
+              \"color\": 3447003,
+              \"fields\": [
+                {
+                  \"name\": \"📌 Commit\",
+                  \"value\": \"$COMMIT_MSG\"
+                },
+                {
+                  \"name\": \"👤 Author\",
+                  \"value\": \"$AUTHOR\"
+                }
+              ],
+              \"url\": \"$COMMIT_URL\"
+            }]
+          }" \
+          $DISCORD_WEBHOOK
