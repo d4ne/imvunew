@@ -37,7 +37,7 @@ export default function ImageLogger() {
       const res = await fetch(apiUrl('/api/image-logger'), { credentials: 'include' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data?.error?.message || res.status === 503 ? 'Database not configured' : 'Failed to load');
+        setError(data?.error?.message || (res.status === 503 ? 'Database not configured' : 'Failed to load'));
         setImages([]);
         return;
       }
@@ -146,7 +146,7 @@ export default function ImageLogger() {
   return (
     <div style={{ padding: 'var(--page-padding)' }} className="w-full">
       <PageHeader
-        breadcrumbs={['Admin']}
+        breadcrumbs={['Features']}
         title="Image Logger"
         subtitle="Upload an image and get a tracking link. When someone opens the link, their IP and details are logged."
       />

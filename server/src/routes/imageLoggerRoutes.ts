@@ -8,16 +8,15 @@ import {
   remove,
 } from '../controllers/imageLoggerController.js';
 import { requireAuth } from '../middleware/requireAuth.js';
-import { requireAdmin } from '../middleware/requireAdmin.js';
 
 const router = express.Router();
 
 // Public: when someone opens this URL we log IP and serve the image
 router.get('/serve/:slug', serve);
 
-router.get('/', requireAuth, requireAdmin, list);
-router.get('/:id/hits', requireAuth, requireAdmin, getHits);
-router.delete('/:id', requireAuth, requireAdmin, remove);
-router.post('/', requireAuth, requireAdmin, uploadMiddleware.single('image'), upload);
+router.get('/', requireAuth, list);
+router.get('/:id/hits', requireAuth, getHits);
+router.delete('/:id', requireAuth, remove);
+router.post('/', requireAuth, uploadMiddleware.single('image'), upload);
 
 export default router;

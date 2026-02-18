@@ -52,10 +52,10 @@ export default function App() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="safelist" element={<Navigate to="/admin/blacklist" replace />} />
         <Route path="blacklist" element={<Navigate to="/admin/blacklist" replace />} />
+        <Route path="image-logger" element={<ImageLogger />} />
         <Route path="admin" element={<AdminRoute><Outlet /></AdminRoute>}>
           <Route index element={<Navigate to="/admin/blacklist" replace />} />
           <Route path="blacklist" element={<Blacklist />} />
-          <Route path="image-logger" element={<ImageLogger />} />
         </Route>
         <Route path="booter" element={<Booter />} />
         <Route path="docs" element={<Docs />} />
