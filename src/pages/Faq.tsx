@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PageHeader from '../components/PageHeader';
-import { apiUrl } from '../lib/api';
+import { apiUrl, fetchWithTimeout } from '../lib/api';
 
 interface FaqItem {
   id: string;
@@ -23,10 +23,14 @@ export default function Faq() {
   const fetchAll = useCallback(async () => {
     setError(null);
     try {
-      const res = await fetch(apiUrl('/api/docs'), { credentials: 'include' });
+      const res = await fetchWithTimeout(apiUrl('/api/docs'), {
+        credentials: 'include',
+        timeoutMs: 12000,
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setItems([]);
+        setLoading(false);
         return;
       }
       const list = data.docs || [];
@@ -37,14 +41,22 @@ export default function Faq() {
       }
       const full = await Promise.all(
         list.map(async (d: { slug: string }) => {
-          const r = await fetch(apiUrl(`/api/docs/${encodeURIComponent(d.slug)}`), { credentials: 'include' });
-          const j = await r.json().catch(() => ({}));
-          return r.ok && j.doc ? j.doc : null;
+          try {
+            const r = await fetchWithTimeout(apiUrl(`/api/docs/${encodeURIComponent(d.slug)}`), {
+              credentials: 'include',
+              timeoutMs: 8000,
+            });
+            const j = await r.json().catch(() => ({}));
+            return r.ok && j.doc ? j.doc : null;
+          } catch {
+            return null;
+          }
         })
       );
       setItems(full.filter(Boolean));
-    } catch {
+    } catch (e) {
       setItems([]);
+      setError(e instanceof Error && e.name === 'AbortError' ? 'Request timed out.' : null);
     } finally {
       setLoading(false);
     }

@@ -12,6 +12,26 @@ export function apiUrl(path: string): string {
   return API_BASE ? `${API_BASE}${p}` : p;
 }
 
+const FETCH_TIMEOUT_MS = 15000;
+
+/** Fetch with timeout so UI doesn't hang forever when API is unreachable (e.g. wrong VITE_API_URL). */
+export async function fetchWithTimeout(
+  url: string,
+  options: RequestInit & { timeoutMs?: number } = {}
+): Promise<Response> {
+  const { timeoutMs = FETCH_TIMEOUT_MS, ...init } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...init, signal: controller.signal });
+    clearTimeout(id);
+    return res;
+  } catch (e) {
+    clearTimeout(id);
+    throw e;
+  }
+}
+
 export async function fetchApi<T = unknown>(
   path: string,
   options?: RequestInit

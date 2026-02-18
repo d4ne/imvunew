@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
-import { apiUrl } from '../lib/api';
+import { apiUrl, fetchWithTimeout } from '../lib/api';
 
 interface RoomScannerConfig {
   maxPages: number;
@@ -64,7 +64,10 @@ export default function AdminRoomScanner() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(apiUrl('/api/room-scanner/config'), { credentials: 'include' });
+      const res = await fetchWithTimeout(apiUrl('/api/room-scanner/config'), {
+        credentials: 'include',
+        timeoutMs: 12000,
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data?.error?.message || 'Failed to load config');
@@ -83,8 +86,11 @@ export default function AdminRoomScanner() {
         setAutoScanEnabled(c.autoScanEnabled ?? false);
         setAutoScanIntervalMinutes(String(c.autoScanIntervalMinutes ?? 60));
       }
-    } catch {
-      setError('Failed to load config');
+    } catch (e) {
+      const msg = e instanceof Error && e.name === 'AbortError'
+        ? 'Request timed out. If you see this on production, set root .env to VITE_API_URL= and rebuild.'
+        : 'Failed to load config';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -92,7 +98,10 @@ export default function AdminRoomScanner() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch(apiUrl('/api/room-scanner/stats'), { credentials: 'include' });
+      const res = await fetchWithTimeout(apiUrl('/api/room-scanner/stats'), {
+        credentials: 'include',
+        timeoutMs: 10000,
+      });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.data) setStats(data.data);
     } catch {

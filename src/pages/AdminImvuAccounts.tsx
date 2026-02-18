@@ -251,15 +251,16 @@ export default function AdminImvuAccounts() {
       {saveSuccess && <div className="mb-4 p-3 rounded bg-green-600/20 text-green-600 dark:text-green-400">{saveSuccess}</div>}
 
       <div className="dashboard-sections">
-        <section className="dashboard-section">
+        <section className="dashboard-section" style={{ overflow: 'visible' }}>
           <header className="dashboard-section-header">
             <h2 className="dashboard-section-title">Try login (get cookie)</h2>
             <p className="dashboard-section-desc">
               Log in with your IMVU username and password. The account is saved automatically on success.
             </p>
           </header>
-          <div className="content-card">
+          <div className="content-card" style={{ overflow: 'visible', minHeight: 120 }}>
             <form
+              id="try-login-form"
               onSubmit={handleTryLogin}
               className="ad-form flex flex-col gap-4 w-full max-w-md"
               autoComplete="off"
@@ -294,23 +295,24 @@ export default function AdminImvuAccounts() {
                   />
                 </div>
               </div>
-              <div style={{ display: 'block', marginTop: 8 }}>
-                <button
-                  type="submit"
-                  disabled={tryLoginLoading}
-                  className="ad-btn"
-                  style={{
-                    display: 'inline-block',
-                    minWidth: 140,
-                    minHeight: 40,
-                    padding: '8px 16px',
-                    cursor: tryLoginLoading ? 'wait' : 'pointer',
-                  }}
-                >
-                  {tryLoginLoading ? 'Trying…' : 'Try login'}
-                </button>
-              </div>
             </form>
+            <div style={{ marginTop: 12, display: 'block' }}>
+              <button
+                type="submit"
+                form="try-login-form"
+                disabled={tryLoginLoading}
+                className="ad-btn"
+                style={{
+                  display: 'inline-block',
+                  minWidth: 140,
+                  minHeight: 44,
+                  padding: '10px 20px',
+                  cursor: tryLoginLoading ? 'wait' : 'pointer',
+                }}
+              >
+                {tryLoginLoading ? 'Trying…' : 'Try login'}
+              </button>
+            </div>
             {tryLoginResult && (
               <div className="mt-4 p-4 rounded bg-[var(--bg-secondary)] text-sm">
                 {tryLoginResult.message && <p className="text-[var(--text-muted)] mb-2">{tryLoginResult.message}</p>}
