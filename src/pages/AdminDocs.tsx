@@ -152,15 +152,26 @@ export default function AdminDocs() {
       {error && <div className="admin-error">{error}</div>}
 
       <div className="dashboard-sections">
-        <section className="dashboard-section">
+        <section className="dashboard-section" style={{ display: 'block', visibility: 'visible' }}>
           <header className="dashboard-section-header">
             <h2 className="dashboard-section-title">{editingId ? 'Edit question' : 'Add question'}</h2>
             <p className="dashboard-section-desc">
               {editingId ? 'Update the question and answer below.' : 'Create a new FAQ entry. Answer supports Markdown.'}
             </p>
           </header>
-          <div className="content-card">
-            <form onSubmit={handleSubmit} style={{ display: 'block', width: '100%' }}>
+          <div
+            style={{
+              display: 'block',
+              visibility: 'visible',
+              overflow: 'visible',
+              background: 'var(--bg-card, #0f0f12)',
+              border: '1px solid var(--border, #222228)',
+              borderRadius: 'var(--radius-lg, 12px)',
+              padding: 'var(--space-6, 1.5rem) var(--space-8, 2rem)',
+              minHeight: 60,
+            }}
+          >
+            <form onSubmit={handleSubmit} style={{ display: 'block', width: '100%', visibility: 'visible' }}>
               <div className="ad-field">
                 <label htmlFor="doc-title" className="ad-label" style={{ display: 'block', marginBottom: '0.25rem', fontSize: 'var(--text-base, 0.8125rem)', fontWeight: 'var(--font-medium, 500)', color: 'var(--text-secondary, #a1a1aa)' }}>
                   Question

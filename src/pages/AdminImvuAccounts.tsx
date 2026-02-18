@@ -251,14 +251,25 @@ export default function AdminImvuAccounts() {
       {saveSuccess && <div className="mb-4 p-3 rounded bg-green-600/20 text-green-600 dark:text-green-400">{saveSuccess}</div>}
 
       <div className="dashboard-sections">
-        <section className="dashboard-section">
+        <section className="dashboard-section" style={{ display: 'block', visibility: 'visible' }}>
           <header className="dashboard-section-header">
             <h2 className="dashboard-section-title">Try login (get cookie)</h2>
             <p className="dashboard-section-desc">
               Log in with your IMVU username and password. The account is saved automatically on success.
             </p>
           </header>
-          <div className="content-card">
+          <div
+            style={{
+              display: 'block',
+              visibility: 'visible',
+              overflow: 'visible',
+              background: 'var(--bg-card, #0f0f12)',
+              border: '1px solid var(--border, #222228)',
+              borderRadius: 'var(--radius-lg, 12px)',
+              padding: 'var(--space-6, 1.5rem) var(--space-8, 2rem)',
+              minHeight: 60,
+            }}
+          >
             <form
               onSubmit={handleTryLogin}
               autoComplete="off"
