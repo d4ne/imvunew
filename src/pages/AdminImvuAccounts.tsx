@@ -259,8 +259,8 @@ export default function AdminImvuAccounts() {
             </p>
           </header>
           <div className="content-card">
-            <form onSubmit={handleTryLogin} autoComplete="off" style={{ display: 'block', maxWidth: 480 }}>
-              <div style={{ marginBottom: 16 }}>
+            <form onSubmit={handleTryLogin} autoComplete="off" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 12, maxWidth: 720 }}>
+              <div style={{ flex: '1 1 140px', minWidth: 120 }}>
                 <label htmlFor="try-username" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'var(--text-secondary, #a1a1aa)' }}>
                   IMVU username
                 </label>
@@ -271,7 +271,7 @@ export default function AdminImvuAccounts() {
                   autoComplete="off"
                   value={tryUsername}
                   onChange={(e) => setTryUsername(e.target.value)}
-                  placeholder="IMVU username"
+                  placeholder="Username"
                   disabled={tryLoginLoading}
                   style={{
                     display: 'block',
@@ -287,7 +287,7 @@ export default function AdminImvuAccounts() {
                   }}
                 />
               </div>
-              <div style={{ marginBottom: 16 }}>
+              <div style={{ flex: '1 1 140px', minWidth: 120 }}>
                 <label htmlFor="try-password" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'var(--text-secondary, #a1a1aa)' }}>
                   Password
                 </label>
@@ -314,15 +314,15 @@ export default function AdminImvuAccounts() {
                   }}
                 />
               </div>
-              <div style={{ marginTop: 8 }}>
+              <div style={{ flex: '0 0 auto' }}>
                 <button
                   type="submit"
                   disabled={tryLoginLoading}
                   style={{
                     display: 'inline-block',
-                    minWidth: 140,
-                    minHeight: 44,
-                    padding: '12px 24px',
+                    minWidth: 120,
+                    minHeight: 40,
+                    padding: '10px 20px',
                     backgroundColor: 'var(--accent, #8b5cf6)',
                     color: '#ffffff',
                     border: 'none',
