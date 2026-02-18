@@ -18,8 +18,8 @@ const quickIcons = {
 };
 
 const quickLinks = [
-  { to: '/image-logger', label: 'Image Logger', desc: 'Tracking links with IP logging', icon: 'image' as const },
-  { to: '/booter', label: 'Booter', desc: 'Booter utilities', icon: 'zap' as const },
+  { to: '/image-logger', label: 'Image Logger', desc: 'Upload an image, get a link. When someone opens it, their IP is logged.', icon: 'image' as const },
+  { to: '/booter', label: 'Booter', desc: 'Booter tools and utilities.', icon: 'zap' as const },
 ];
 
 export default function Dashboard() {
@@ -31,30 +31,17 @@ export default function Dashboard() {
       <PageHeader
         breadcrumbs={['Overview']}
         title="Dashboard"
-        subtitle="Your dashboard at a glance"
+        subtitle={`Welcome back, ${displayName}`}
       />
 
-      <section className="page-hero">
-        <h2 className="page-hero-title">Welcome back, {displayName}</h2>
-        <p className="page-hero-desc">
-          Use the tools below to get started. Jump into any product to view logs, run tools, or manage settings.
-        </p>
-      </section>
-
       <section>
-        <div className="quick-access-header">
-          <h3 className="quick-access-title">Quick access</h3>
-          <p className="quick-access-desc">Jump to any product to view logs or run tools.</p>
-        </div>
         <div className="quick-grid">
           {quickLinks.map(({ to, label, desc, icon }) => (
             <Link key={to} to={to} className="quick-card">
-              <span className="quick-card-icon">{quickIcons[icon]}</span>
-              <div className="min-w-0 flex-1">
-                <span className="quick-card-label">{label}</span>
-                <p className="quick-card-desc">{desc}</p>
-              </div>
-              <span className="quick-card-arrow" aria-hidden>→</span>
+              <div className="quick-card-icon-wrap">{quickIcons[icon]}</div>
+              <h4 className="quick-card-label">{label}</h4>
+              <p className="quick-card-desc">{desc}</p>
+              <span className="quick-card-action">Open</span>
             </Link>
           ))}
         </div>

@@ -44,3 +44,14 @@ model ImageLoggerHit {
 
   @@map("image_logger_hits")
 }
+
+model Doc {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("docs")
+}

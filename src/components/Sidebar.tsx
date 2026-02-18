@@ -105,14 +105,15 @@ const nav = [
 
 const adminNav = [
   { to: '/admin/blacklist', label: 'Blacklist', icon: 'list' as const },
+  { to: '/admin/docs', label: 'Docs', icon: 'book' as const },
 ];
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
 
   return (
-    <aside className="sidebar w-[var(--sidebar-width)] shrink-0 flex flex-col min-h-screen">
-      <div className="px-5 py-5 border-b border-[var(--border)]">
+    <aside className="sidebar w-[var(--sidebar-width)] shrink-0 flex flex-col h-screen overflow-hidden">
+      <div className="px-5 py-5 border-b border-[var(--border)] shrink-0">
         <Link to="/dashboard" className="sidebar-logo">
           <span className="sidebar-logo-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -124,7 +125,7 @@ export default function Sidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-5">
+      <nav className="flex-1 min-h-0 overflow-hidden py-5">
         {nav.map(({ section, links }) => (
           <div key={section} className="mb-7">
             <p className="sidebar-nav-section">{section}</p>
@@ -167,7 +168,7 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <div className="sidebar-footer mt-auto border-t border-[var(--border)] h-14 px-4 flex items-center gap-3">
+      <div className="sidebar-footer shrink-0 border-t border-[var(--border)] h-14 px-4 flex items-center gap-3">
         <div className="flex-1 min-w-0 flex items-center gap-2">
           <span className="truncate text-sm font-medium text-[var(--text-primary)]">
             {user?.username ?? 'Guest'}

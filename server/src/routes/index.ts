@@ -6,6 +6,7 @@ import avatarRoutes from './avatarRoutes.js';
 import usersRoutes from './usersRoutes.js';
 import blacklistRoutes from './blacklistRoutes.js';
 import imageLoggerRoutes from './imageLoggerRoutes.js';
+import docsRoutes from './docsRoutes.js';
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.get('/', (_req: Request, res: Response) => {
       users: '/api/users/*',
       blacklist: '/api/blacklist/*',
       imageLogger: '/api/image-logger/*',
+      docs: '/api/docs/*',
     },
   });
 });
@@ -43,5 +45,6 @@ router.use('/avatar', avatarRoutes);
 router.use('/users', usersRoutes);
 router.use('/blacklist', blacklistRoutes);
 router.use('/image-logger', imageLoggerRoutes);
+router.use('/docs', docsRoutes);
 
 export default router;

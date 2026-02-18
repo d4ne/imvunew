@@ -2,10 +2,23 @@
 
 Professional dashboard and backend for IMVU tools. **Discord login** for the dashboard; **no Discord bot** – API only.
 
-- **Frontend:** React 18 + TypeScript + Vite. Dark theme, sidebar nav, Services page (Free / Plus / Premium).
-- **Backend:** Express + TypeScript. IMVU API (rooms, avatar, users), Discord OAuth (login only), JWT sessions.
+- **Frontend:** React 18 + TypeScript + Vite. Dark theme, sidebar nav.
+- **Backend:** Express + TypeScript. IMVU API, Discord OAuth (login only), JWT sessions.
 
-## Quick start
+---
+
+## Two setups
+
+| Setup | Use case | Guide |
+|-------|----------|--------|
+| **Local development** | Run on your machine (Windows, macOS, Linux) with hot reload | [LOCAL.md](LOCAL.md) |
+| **Ubuntu (production)** | Deploy on a VPS (e.g. 87.106.23.37) with nginx + PM2 | [SETUP-UBUNTU.md](SETUP-UBUNTU.md) |
+
+Use **.env.example** (root + server) for local; on Ubuntu use **server/.env.production.example** as reference and set your real URLs and secrets in **server/.env**.
+
+---
+
+## Quick start (local)
 
 ### 1. Backend (API)
 

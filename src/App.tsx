@@ -7,6 +7,7 @@ import Blacklist from './pages/Blacklist';
 import Booter from './pages/Booter';
 import ImageLogger from './pages/ImageLogger';
 import Docs from './pages/Docs';
+import AdminDocs from './pages/AdminDocs';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -56,9 +57,11 @@ export default function App() {
         <Route path="admin" element={<AdminRoute><Outlet /></AdminRoute>}>
           <Route index element={<Navigate to="/admin/blacklist" replace />} />
           <Route path="blacklist" element={<Blacklist />} />
+          <Route path="docs" element={<AdminDocs />} />
         </Route>
         <Route path="booter" element={<Booter />} />
         <Route path="docs" element={<Docs />} />
+        <Route path="docs/:slug" element={<Docs />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

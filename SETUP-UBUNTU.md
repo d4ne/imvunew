@@ -1,5 +1,7 @@
 # Full Ubuntu setup guide – Git pull, env, PostgreSQL, deploy
 
+**For local development** (your machine), use [LOCAL.md](LOCAL.md) instead.
+
 Use this **exact order** on Ubuntu (VPS or VM). Replace placeholders:
 
 - **YOUR_IP_OR_DOMAIN** → e.g. `87.106.23.37` or `app.example.com` (no `https://` in FRONTEND_URL/DISCORD_REDIRECT_URI for HTTP)

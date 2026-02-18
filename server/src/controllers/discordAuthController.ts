@@ -50,7 +50,9 @@ export const discordCallback = asyncHandler(async (req: Request, res: Response):
     form.toString(),
     { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
   ).catch((e) => {
-    logger.error(`Discord token exchange failed: ${e.response?.data || e.message}`);
+    const errData = e.response?.data;
+    const errMsg = typeof errData === 'object' ? JSON.stringify(errData) : errData || e.message;
+    logger.error(`Discord token exchange failed: ${errMsg}. redirect_uri used: ${redirectUri}`);
     return null;
   });
 
@@ -106,8 +108,9 @@ export const discordCallback = asyncHandler(async (req: Request, res: Response):
   };
 
   const token = jwt.sign(payload, secret, { expiresIn: maxAge });
-  // Use request protocol so cookies work over HTTP (e.g. http://87.106.23.37). Secure only over HTTPS.
-  const useSecureCookie = req.secure;
+  // Use HTTPS only when frontend URL is https (so cookies work over HTTP e.g. http://87.106.23.37)
+  const frontendIsHttps = frontendUrl.toLowerCase().startsWith('https://');
+  const useSecureCookie = frontendIsHttps && req.secure;
   res.cookie(cookieName, token, {
     httpOnly: true,
     secure: useSecureCookie,
