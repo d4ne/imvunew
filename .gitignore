@@ -32,6 +32,9 @@ Thumbs.db
 # Vite
 *.local
 
+# Uploaded files (image logger, etc.)
+uploads/
+
 # Optional
 .cache/
 coverage/

@@ -91,7 +91,6 @@ const nav = [
   {
     section: 'Features',
     links: [
-      { to: '/image-logger', label: 'Image Logger', icon: 'image' as const },
       { to: '/booter', label: 'Booter', icon: 'zap' as const },
     ],
   },
@@ -105,6 +104,7 @@ const nav = [
 
 const adminNav = [
   { to: '/admin/blacklist', label: 'Blacklist', icon: 'list' as const },
+  { to: '/admin/image-logger', label: 'Image Logger', icon: 'image' as const },
 ];
 
 export default function Sidebar() {

@@ -19,3 +19,28 @@ model BlacklistEntry {
   @@unique([identifier])
   @@map("blacklist_entries")
 }
+
+model ImageLoggerImage {
+  id          String   @id @default(cuid())
+  slug        String   @unique // URL-safe id for tracking link
+  filePath    String   // path relative to uploads dir
+  originalName String
+  mimeType    String?
+  addedById   String?
+  createdAt   DateTime @default(now())
+  hits        ImageLoggerHit[]
+
+  @@map("image_logger_images")
+}
+
+model ImageLoggerHit {
+  id        String   @id @default(cuid())
+  imageId   String
+  image     ImageLoggerImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  ip        String?
+  userAgent String?
+  referer   String?
+  createdAt DateTime @default(now())
+
+  @@map("image_logger_hits")
+}

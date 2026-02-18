@@ -55,8 +55,8 @@ export default function App() {
         <Route path="admin" element={<AdminRoute><Outlet /></AdminRoute>}>
           <Route index element={<Navigate to="/admin/blacklist" replace />} />
           <Route path="blacklist" element={<Blacklist />} />
+          <Route path="image-logger" element={<ImageLogger />} />
         </Route>
-        <Route path="image-logger" element={<ImageLogger />} />
         <Route path="booter" element={<Booter />} />
         <Route path="docs" element={<Docs />} />
       </Route>
