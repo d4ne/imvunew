@@ -7,6 +7,9 @@ import usersRoutes from './usersRoutes.js';
 import blacklistRoutes from './blacklistRoutes.js';
 import imageLoggerRoutes from './imageLoggerRoutes.js';
 import docsRoutes from './docsRoutes.js';
+import featuresRoutes from './featuresRoutes.js';
+import roomScannerRoutes from './roomScannerRoutes.js';
+import imvuAccountsRoutes from './imvuAccountsRoutes.js';
 
 const router = express.Router();
 
@@ -34,6 +37,9 @@ router.get('/', (_req: Request, res: Response) => {
       blacklist: '/api/blacklist/*',
       imageLogger: '/api/image-logger/*',
       docs: '/api/docs/*',
+      features: '/api/features/*',
+      roomScanner: '/api/room-scanner/*',
+      imvuAccounts: '/api/imvu-accounts/*',
     },
   });
 });
@@ -46,5 +52,8 @@ router.use('/users', usersRoutes);
 router.use('/blacklist', blacklistRoutes);
 router.use('/image-logger', imageLoggerRoutes);
 router.use('/docs', docsRoutes);
+router.use('/features', featuresRoutes);
+router.use('/room-scanner', roomScannerRoutes);
+router.use('/imvu-accounts', imvuAccountsRoutes);
 
 export default router;

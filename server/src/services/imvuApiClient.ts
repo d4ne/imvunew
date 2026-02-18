@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config.js';
 import logger from '../config/logger.js';
+import { getScannerConfig } from './scannerConfigService.js';
+import { getActiveImvuCredentials } from './imvuAccountService.js';
 import {
   Room,
   RoomsList,
@@ -62,8 +64,14 @@ class ImvuApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
+        const url = (error.config?.url ?? '') as string;
+        const isRoomDetails = url.includes('/chat/chat-');
         if (error.response) {
-          logger.error(`IMVU API ${error.response.status}: ${this.getErrorMessage(error)}`);
+          if (isRoomDetails && (error.response.status === 403 || error.response.status === 404)) {
+            logger.debug(`IMVU API ${error.response.status} on room details (skipped): ${url.slice(0, 60)}...`);
+          } else {
+            logger.error(`IMVU API ${error.response.status}: ${this.getErrorMessage(error)}`);
+          }
         } else {
           logger.error(`IMVU API network error: ${error.message}`);
         }
@@ -75,6 +83,10 @@ class ImvuApiClient {
   public setCredentials(userId: string, authToken: string): void {
     this.userId = userId;
     this.authToken = authToken;
+  }
+
+  public setCookie(cookie: string): void {
+    this.client.defaults.headers.common['cookie'] = cookie || '';
   }
 
   private getAuthHeaders(): Record<string, string> {
@@ -170,8 +182,20 @@ class ImvuApiClient {
 
   public async getRoomDetails(roomId: string, version: string): Promise<{ occupants: unknown[] }> {
     try {
+      const url = `https://api.imvu.com/chat/chat-${roomId}-${version}`;
+      const cookie = typeof this.client.defaults.headers.common['cookie'] === 'string'
+        ? this.client.defaults.headers.common['cookie']
+        : '';
+      const headers: Record<string, string> = {
+        ...this.getAuthHeaders(),
+        'X-imvu-application': 'welcome/1',
+        origin: 'https://secure.imvu.com',
+        referer: 'https://secure.imvu.com/',
+      };
+      if (cookie) headers['cookie'] = cookie;
       const response = await this.client.get<{ denormalized?: Record<string, { data?: { legacy_cid?: string; id?: string; name?: string; avatar_name?: string } }> }>(
-        `/chat/chat-${roomId}-${version}`
+        url,
+        { headers }
       );
       const denormalized = response.data?.denormalized || {};
       const occupants: unknown[] = [];
@@ -192,30 +216,72 @@ class ImvuApiClient {
   }
 
   public async getAllRooms(): Promise<Room[]> {
+    const activeCreds = await getActiveImvuCredentials();
+    if (activeCreds) {
+      this.setCredentials(activeCreds.userId, activeCreds.authToken);
+      this.setCookie(activeCreds.cookie);
+    }
+    if (!this.userId?.trim()) {
+      throw new ImvuApiError('IMVU_USER_ID is not set. Set it in server .env or add an active IMVU account in Admin → IMVU Accounts.', 400);
+    }
+    const scannerConfig = await getScannerConfig();
+    const { maxPages, pageSize, delayMs, keywords, roomType, hashtags, language } = scannerConfig;
     const allRooms: Room[] = [];
     let startIndex = 0;
-    const pageSize = 25;
-    const maxPages = parseInt(process.env.SCANNER_MAX_PAGES || '100', 10);
 
+    const cookieToSend =
+      (activeCreds?.cookie?.trim()) ||
+      (typeof this.client.defaults.headers.common['cookie'] === 'string' ? this.client.defaults.headers.common['cookie'] : '') ||
+      '';
+
+    const roomListBase = 'https://api.imvu.com';
+    logger.info(`Room list: fetching up to ${maxPages} pages (pageSize=${pageSize})`);
     for (let pageCount = 0; pageCount < maxPages; pageCount++) {
-      const url = `/room_list/room_list-${this.userId}-explore/rooms`;
-      const params = {
-        keywords: '',
+      logger.info(`Room list: fetching page ${pageCount + 1} (start_index=${startIndex})...`);
+      const url = `${roomListBase}/room_list/room_list-${this.userId}-explore/rooms`;
+      const params: Record<string, string> = {
+        keywords: keywords || '',
         rating: 'all',
-        room_type: 'all',
-        scene_occupancy_max: '250',
+        room_type: roomType || 'all',
+        scene_occupancy_max: '10',
         scene_occupancy_min: '0',
         total_occupancy_max: '250',
         total_occupancy_min: '0',
-        hashtags: '',
+        hashtags: hashtags || '',
         start_index: String(startIndex),
         limit: String(pageSize),
       };
+      if (language?.trim()) params.language = language.trim();
 
-      const response = await this.client.get<{ denormalized?: Record<string, { data?: Record<string, unknown> }> }>(
-        url,
-        { params }
-      );
+      let response: { data?: { denormalized?: Record<string, { data?: Record<string, unknown> }> } };
+      try {
+        const roomListHeaders: Record<string, string> = {
+          ...this.getAuthHeaders(),
+          'X-imvu-application': 'welcome/1',
+          origin: 'https://secure.imvu.com',
+          referer: 'https://secure.imvu.com/',
+        };
+        if (cookieToSend) roomListHeaders['cookie'] = cookieToSend;
+        response = await this.client.get<{ denormalized?: Record<string, { data?: Record<string, unknown> }> }>(
+          url,
+          { params, headers: roomListHeaders }
+        );
+      } catch (err: unknown) {
+        const status = (err as { response?: { status?: number } })?.response?.status;
+        const msg = (err as { response?: { data?: { message?: string; error?: string } } })?.response?.data?.message
+          || (err as { response?: { data?: { message?: string; error?: string } } })?.response?.data?.error
+          || (err as Error)?.message
+          || String(err);
+        if ((status === 403 || status === 429) && pageCount > 0 && allRooms.length > 0) {
+          logger.warn(`Room list returned ${status}, stopping pagination. Collected ${allRooms.length} rooms so far.`);
+          return allRooms;
+        }
+        throw new ImvuApiError(
+          `Room list request failed${status ? ` (HTTP ${status})` : ''}: ${msg}. Use an active IMVU account in Admin → IMVU Accounts, or set IMVU_USER_ID, IMVU_AUTH_TOKEN, and IMVU_COOKIE in server .env.`,
+          status ?? 500
+        );
+      }
+
       const denormalized = response.data?.denormalized || {};
       const rooms: Array<{ id: string; version: string; name?: string; description?: string; customers_id?: string; owner_id?: string }> = [];
 
@@ -236,25 +302,51 @@ class ImvuApiClient {
         }
       }
 
-      if (rooms.length === 0) break;
+      if (rooms.length === 0) {
+        logger.info(`Room list: page ${pageCount + 1} returned 0 rooms, stopping.`);
+        break;
+      }
+      logger.info(`Room list: page ${pageCount + 1} returned ${rooms.length} rooms, fetching details...`);
 
-      for (const room of rooms) {
-        const details = await this.getRoomDetails(room.id, room.version);
-        allRooms.push({
-          room_id: room.id,
-          name: room.name,
-          room_name: room.name,
-          owner_id: room.customers_id || room.owner_id || '',
-          description: room.description,
-          participants: details.occupants as User[],
-        });
+      for (let i = 0; i < rooms.length; i++) {
+        const room = rooms[i];
+        if ((i + 1) % 10 === 0 || i === 0) {
+          logger.info(`Room details: ${i + 1}/${rooms.length} (page ${pageCount + 1})`);
+        }
+        if (i > 0) {
+          await new Promise((r) => setTimeout(r, 500));
+        }
+        try {
+          const details = await this.getRoomDetails(room.id, room.version);
+          allRooms.push({
+            room_id: room.id,
+            name: room.name,
+            room_name: room.name,
+            owner_id: room.customers_id || room.owner_id || '',
+            description: room.description,
+            participants: details.occupants as User[],
+          });
+        } catch {
+          allRooms.push({
+            room_id: room.id,
+            name: room.name,
+            room_name: room.name,
+            owner_id: room.customers_id || room.owner_id || '',
+            description: room.description,
+            participants: [],
+          });
+        }
       }
 
       startIndex += pageSize;
-      if (rooms.length < pageSize) break;
-      if (pageCount % 5 === 0) await new Promise((r) => setTimeout(r, 300));
+      if (rooms.length < pageSize) {
+        logger.info(`Room list: last page had ${rooms.length} rooms, stopping.`);
+        break;
+      }
+      if (pageCount % 5 === 0 && delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
     }
 
+    logger.info(`Room list: done. Total rooms: ${allRooms.length}`);
     return allRooms;
   }
 

@@ -55,3 +55,123 @@ model Doc {
 
   @@map("docs")
 }
+
+model Feature {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  status    String   @default("active") // active | updating | disabled
+  updatedAt DateTime @updatedAt
+
+  @@map("features")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// Admin: IMVU bot accounts (credentials for room scanner / API)
+model ImvuAccount {
+  id           String   @id @default(cuid())
+  label        String   // e.g. "Main bot", "Scanner 2"
+  email        String?  // optional; for reference or try-login
+  imvuUserId   String?  @map("imvu_user_id")
+  imvuAuthToken String? @map("imvu_auth_token") @db.Text
+  imvuCookie   String?  @map("imvu_cookie") @db.Text
+  isActive     Boolean  @default(false) @map("is_active") // only one should be true; used for scanner
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("imvu_accounts")
+}
+
+// --- Room scanner: track IMVU rooms, users, and visits ---
+
+enum ScanStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model ImvuUser {
+  id          String      @id @default(cuid())
+  cid         String      @unique // IMVU customer ID
+  username    String?
+  avatarName  String?     @map("avatar_name")
+  avatarImage String?     @map("avatar_image")
+  lastSeen    DateTime    @default(now()) @map("last_seen")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  roomVisits  RoomVisit[]
+
+  @@index([cid])
+  @@index([username])
+  @@index([lastSeen])
+  @@map("imvu_users")
+}
+
+model Room {
+  id          String      @id @default(cuid())
+  roomId      String      @unique @map("room_id") // IMVU room ID
+  roomName    String?     @map("room_name")
+  description String?    @db.Text
+  ownerId    String?     @map("owner_id")
+  isPublic    Boolean     @default(true) @map("is_public")
+  maxUsers    Int?        @map("max_users")
+  thumbnail   String?
+  firstSeen   DateTime    @default(now()) @map("first_seen")
+  lastSeen    DateTime    @default(now()) @map("last_seen")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  roomVisits  RoomVisit[]
+
+  @@index([roomId])
+  @@index([roomName])
+  @@index([lastSeen])
+  @@map("rooms")
+}
+
+model Scan {
+  id           String      @id @default(cuid())
+  startTime    DateTime    @default(now()) @map("start_time")
+  endTime      DateTime?   @map("end_time")
+  status       ScanStatus  @default(IN_PROGRESS)
+  totalRooms   Int         @default(0) @map("total_rooms")
+  roomsScanned Int         @default(0) @map("rooms_scanned")
+  totalUsers   Int         @default(0) @map("total_users")
+  uniqueUsers  Int         @default(0) @map("unique_users")
+  newUsers     Int         @default(0) @map("new_users")
+  errorCount   Int         @default(0) @map("error_count")
+  errorMessage String?     @map("error_message") @db.Text
+  duration     Int?        // milliseconds
+  roomVisits   RoomVisit[]
+
+  @@index([startTime])
+  @@index([status])
+  @@map("scans")
+}
+
+model RoomVisit {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  roomId    String   @map("room_id")  // FK to Room.id (internal)
+  scanId    String   @map("scan_id")
+  seenAt    DateTime @default(now()) @map("seen_at")
+  userCount Int?     @map("user_count")
+  user      ImvuUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  scan      Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roomId, scanId])
+  @@index([userId, seenAt])
+  @@index([roomId, seenAt])
+  @@index([scanId])
+  @@map("room_visits")
+}

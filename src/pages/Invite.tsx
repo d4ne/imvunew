@@ -2,7 +2,7 @@ import PageHeader from '../components/PageHeader';
 
 export default function Invite() {
   return (
-    <div style={{ padding: 'var(--page-padding)' }} className="w-full">
+    <div className="page w-full">
       <PageHeader
         breadcrumbs={['Access']}
         title="Invite"

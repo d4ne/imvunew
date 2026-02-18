@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import PageHeader from '../components/PageHeader';
 import { apiUrl } from '../lib/api';
 
@@ -29,6 +29,9 @@ export default function ImageLogger() {
   const [hits, setHits] = useState<HitEntry[]>([]);
   const [hitsLoading, setHitsLoading] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchImages = useCallback(async () => {
     setLoading(true);
@@ -68,17 +71,56 @@ export default function ImageLogger() {
     }
   }, []);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setError('Only image files are allowed');
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+      setError(null);
+      setSelectedFile(file);
+    } else {
+      setSelectedFile(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setError('Only image files are allowed');
+        return;
+      }
+      setError(null);
+      setSelectedFile(file);
+      if (fileInputRef.current) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInputRef.current.files = dt.files;
+      }
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragOver(false);
+  };
+
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const input = form.querySelector<HTMLInputElement>('input[type="file"]');
-    if (!input?.files?.length) {
-      setError('Select an image');
-      return;
-    }
-    const file = input.files[0];
-    if (!file.type.startsWith('image/')) {
-      setError('Only image files are allowed');
+    const file = selectedFile;
+    if (!file) {
+      setError('Choose an image first');
       return;
     }
     setSubmitting(true);
@@ -96,7 +138,8 @@ export default function ImageLogger() {
         setError(data?.error?.message || 'Upload failed');
         return;
       }
-      input.value = '';
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
       await fetchImages();
     } catch {
       setError('Upload failed');
@@ -143,135 +186,191 @@ export default function ImageLogger() {
     }
   };
 
+  const formatSize = (bytes: number) =>
+    bytes < 1024 ? `${bytes} B` : bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
   return (
-    <div style={{ padding: 'var(--page-padding)' }} className="w-full">
+    <div className="page w-full">
       <PageHeader
         breadcrumbs={['Features']}
         title="Image Logger"
-        subtitle="Upload an image and get a tracking link. When someone opens the link, their IP and details are logged."
+        subtitle="Get a tracking link for any image. Opens are logged with IP and details."
       />
 
-      <div className="content-card mb-6">
-        <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">Upload image</h3>
-        <form onSubmit={handleUpload} className="flex flex-wrap items-end gap-3">
-          <div className="min-w-[220px]">
-            <label htmlFor="il-file" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-              Choose image (JPEG, PNG, GIF, WebP)
-            </label>
-            <input
-              id="il-file"
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp,image/bmp"
-              className="w-full px-3 py-2 rounded-[var(--radius)] bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)] file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-[var(--accent)] file:text-white"
-              disabled={submitting}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="px-4 py-2 rounded-[var(--radius)] bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
-          >
-            {submitting ? 'Uploading…' : 'Upload'}
-          </button>
-        </form>
-      </div>
-
-      {error && (
-        <div className="mb-4 px-4 py-3 rounded-[var(--radius)] bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-
-      <div className="content-card">
-        <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">Tracking images</h3>
-        {loading ? (
-          <p className="text-[var(--text-muted)] text-sm">Loading…</p>
-        ) : images.length === 0 ? (
-          <p className="text-[var(--text-muted)] text-sm">No images yet. Upload one to get a tracking link.</p>
-        ) : (
-          <div className="space-y-4">
-            {images.map((img) => (
-              <div
-                key={img.id}
-                className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg-tertiary)] p-4"
-              >
-                <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <span className="font-medium text-[var(--text-primary)] truncate" title={img.originalName}>
-                    {img.originalName}
-                  </span>
-                  <span className="text-[var(--text-muted)] text-sm">{img.hitCount} hit{img.hitCount !== 1 ? 's' : ''}</span>
-                  <span className="text-[var(--text-muted)] text-xs">{formatDate(img.createdAt)}</span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <input
-                    type="text"
-                    readOnly
-                    value={img.trackingUrl}
-                    className="flex-1 min-w-[200px] px-3 py-1.5 rounded bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-secondary)] font-mono"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => copyUrl(img.trackingUrl)}
-                    className="px-3 py-1.5 rounded-[var(--radius)] bg-[var(--accent-muted)] text-[var(--accent)] text-sm font-medium hover:bg-[var(--accent)] hover:text-white transition-colors"
-                  >
-                    {copyFeedback === img.trackingUrl ? 'Copied!' : 'Copy link'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => fetchHits(img.id)}
-                    className="px-3 py-1.5 rounded-[var(--radius)] border border-[var(--border)] text-[var(--text-secondary)] text-sm hover:bg-[var(--bg-elevated)] transition-colors"
-                  >
-                    View hits
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleRemove(img.id)}
-                    disabled={removingId === img.id}
-                    className="px-3 py-1.5 rounded text-red-400 hover:bg-red-500/10 disabled:opacity-50 text-sm transition-colors"
-                  >
-                    {removingId === img.id ? '…' : 'Delete'}
-                  </button>
-                </div>
-                {hitsForId === img.id && (
-                  <div className="mt-3 pt-3 border-t border-[var(--border)]">
-                    {hitsLoading ? (
-                      <p className="text-[var(--text-muted)] text-sm">Loading hits…</p>
-                    ) : hits.length === 0 ? (
-                      <p className="text-[var(--text-muted)] text-sm">No hits yet.</p>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="border-b border-[var(--border)] text-left">
-                              <th className="py-2 pr-3 font-semibold text-[var(--text-secondary)]">IP</th>
-                              <th className="py-2 pr-3 font-semibold text-[var(--text-secondary)]">User-Agent</th>
-                              <th className="py-2 pr-3 font-semibold text-[var(--text-secondary)]">Referer</th>
-                              <th className="py-2 font-semibold text-[var(--text-secondary)]">Time</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {hits.map((h) => (
-                              <tr key={h.id} className="border-b border-[var(--border-subtle)] last:border-0">
-                                <td className="py-2 pr-3 font-mono text-[var(--text-primary)]">{h.ip ?? '—'}</td>
-                                <td className="py-2 pr-3 text-[var(--text-secondary)] max-w-[200px] truncate" title={h.userAgent ?? ''}>
-                                  {h.userAgent || '—'}
-                                </td>
-                                <td className="py-2 pr-3 text-[var(--text-muted)] max-w-[180px] truncate" title={h.referer ?? ''}>
-                                  {h.referer || '—'}
-                                </td>
-                                <td className="py-2 text-[var(--text-muted)]">{formatDate(h.createdAt)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
+      <div className="dashboard-sections">
+        {/* Upload */}
+        <section className="dashboard-section il-upload-section">
+          <header className="dashboard-section-header">
+            <h2 className="dashboard-section-title">Upload</h2>
+            <p className="dashboard-section-desc">Add an image to get a shareable tracking link.</p>
+          </header>
+          <div className="il-upload-card">
+            <form
+              onSubmit={handleUpload}
+              className={`il-upload-zone ${isDragOver ? 'il-upload-zone--over' : ''} ${selectedFile ? 'il-upload-zone--has-file' : ''}`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <input
+                ref={fileInputRef}
+                id="il-file"
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp,image/bmp"
+                className="sr-only"
+                onChange={handleFileChange}
+                disabled={submitting}
+              />
+              {selectedFile ? (
+                <>
+                  <div className="il-upload-zone-file">
+                    <span className="il-upload-zone-icon il-upload-zone-icon--image" aria-hidden>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15l-5-5L5 21" />
+                      </svg>
+                    </span>
+                    <div className="il-upload-zone-file-info">
+                      <span className="il-upload-zone-filename" title={selectedFile.name}>{selectedFile.name}</span>
+                      <span className="il-upload-zone-filesize">{formatSize(selectedFile.size)}</span>
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+                  <div className="il-upload-zone-actions">
+                    <label htmlFor="il-file" className="il-btn il-btn-choose">
+                      Change
+                    </label>
+                    <button type="submit" disabled={submitting} className="il-btn il-btn-upload">
+                      {submitting ? 'Uploading…' : 'Upload'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <label htmlFor="il-file" className="il-upload-zone-inner">
+                    <span className="il-upload-zone-icon" aria-hidden>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                    </span>
+                    <span className="il-upload-zone-title">Drop an image here or click to browse</span>
+                    <span className="il-upload-zone-hint">JPEG, PNG, GIF or WebP</span>
+                  </label>
+                </>
+              )}
+            </form>
+          </div>
+        </section>
+
+        {error && (
+          <div className="il-error" role="alert">
+            {error}
           </div>
         )}
+
+        {/* List */}
+        <section className="dashboard-section il-list-section">
+          <header className="dashboard-section-header">
+            <h2 className="dashboard-section-title">Tracking images</h2>
+            <p className="dashboard-section-desc">Links and hit counts for your uploaded images.</p>
+          </header>
+          <div className="content-card il-list-card">
+            {loading ? (
+              <div className="il-loading">
+                <span className="il-loading-dot" aria-hidden />
+                <span className="il-loading-dot" aria-hidden />
+                <span className="il-loading-dot" aria-hidden />
+                <span className="il-loading-text">Loading…</span>
+              </div>
+            ) : images.length === 0 ? (
+              <div className="il-empty">
+                <span className="il-empty-icon" aria-hidden>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                </span>
+                <p className="il-empty-title">No links yet</p>
+                <p className="il-empty-desc">Upload an image above to create one. Every open is logged here.</p>
+              </div>
+            ) : (
+              <ul className="il-list">
+                {images.map((img) => (
+                  <li key={img.id} className="il-item">
+                    <div className="il-item-head">
+                      <span className="il-item-name" title={img.originalName}>{img.originalName}</span>
+                      <span className="il-item-meta">
+                        {img.hitCount} hit{img.hitCount !== 1 ? 's' : ''}
+                        <span className="il-item-sep" aria-hidden>·</span>
+                        <span className="il-item-date">{formatDate(img.createdAt)}</span>
+                      </span>
+                    </div>
+                    <div className="il-item-url-row">
+                      <input type="text" readOnly value={img.trackingUrl} className="il-url-input" aria-label="Tracking URL" />
+                      <div className="il-item-actions">
+                        <button
+                          type="button"
+                          onClick={() => copyUrl(img.trackingUrl)}
+                          className="il-btn il-btn-sm il-btn-copy"
+                        >
+                          {copyFeedback === img.trackingUrl ? 'Copied' : 'Copy'}
+                        </button>
+                        <button type="button" onClick={() => fetchHits(img.id)} className="il-btn il-btn-sm il-btn-hits">
+                          View hits
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemove(img.id)}
+                          disabled={removingId === img.id}
+                          className="il-btn il-btn-sm il-btn-delete"
+                          aria-label={`Delete ${img.originalName}`}
+                        >
+                          {removingId === img.id ? '…' : 'Delete'}
+                        </button>
+                      </div>
+                    </div>
+                    {hitsForId === img.id && (
+                      <div className="il-hits">
+                        <p className="il-hits-label">Visitor log</p>
+                        {hitsLoading ? (
+                          <p className="il-hits-loading">Loading…</p>
+                        ) : hits.length === 0 ? (
+                          <p className="il-hits-empty">No opens yet.</p>
+                        ) : (
+                          <div className="il-hits-table-wrap">
+                            <table className="il-hits-table">
+                              <thead>
+                                <tr>
+                                  <th>IP</th>
+                                  <th>User-Agent</th>
+                                  <th>Referer</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {hits.map((h) => (
+                                  <tr key={h.id}>
+                                    <td className="il-cell-ip">{h.ip ?? '—'}</td>
+                                    <td className="il-cell-ua" title={h.userAgent ?? ''}>{h.userAgent || '—'}</td>
+                                    <td className="il-cell-ref" title={h.referer ?? ''}>{h.referer || '—'}</td>
+                                    <td className="il-cell-time">{formatDate(h.createdAt)}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

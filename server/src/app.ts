@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import config from './config/config.js';
 import logger from './config/logger.js';
 import routes from './routes/index.js';
+import { serveImageLogger } from './controllers/imageLoggerController.js';
 import errorHandler from './middleware/errorHandler.js';
 import validateAuth from './middleware/validateAuth.js';
 
@@ -42,6 +43,9 @@ app.use(
     stream: { write: (msg: string) => logger.http(msg.trim()) },
   })
 );
+
+// Clean image URL: /i/:slug (no /api, looks like a normal image link)
+app.get('/i/:slug', serveImageLogger);
 
 app.use('/api/', validateAuth);
 app.use('/api', routes);

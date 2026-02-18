@@ -69,7 +69,7 @@ export const upload = asyncHandler(async (req: Request, res: Response): Promise<
     },
   });
   const baseUrl = config.discord.frontendUrl || `http://localhost:${config.server.port}`;
-  const trackingUrl = `${baseUrl}/api/image-logger/serve/${urlSlug}`;
+  const trackingUrl = `${baseUrl}/i/${urlSlug}${ext}`;
   res.status(201).json({
     success: true,
     image: {
@@ -82,14 +82,16 @@ export const upload = asyncHandler(async (req: Request, res: Response): Promise<
   });
 });
 
+/** Serves the image and logs the hit. Used by both GET /api/image-logger/serve/:slug and GET /i/:slug */
 export const serve = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const db = getPrisma();
-  const slug = req.params.slug as string;
-  if (!slug) {
+  const slugParam = req.params.slug as string;
+  if (!slugParam) {
     res.status(404).send('Not found');
     return;
   }
-  // slug param might be "abc123" and we store file as abc123.png - find by slug prefix
+  // URL may be /i/abc123.jpg or /i/abc123 — strip extension for DB lookup
+  const slug = path.extname(slugParam) ? path.basename(slugParam, path.extname(slugParam)) : slugParam;
   const image = db
     ? await db.imageLoggerImage.findUnique({
         where: { slug },
@@ -120,6 +122,9 @@ export const serve = asyncHandler(async (req: Request, res: Response): Promise<v
   fs.createReadStream(filePath).pipe(res);
 });
 
+/** Same as serve; exported for the clean /i/:slug route in app.ts */
+export const serveImageLogger = serve;
+
 export const list = asyncHandler(async (_req: Request, res: Response): Promise<void> => {
   const db = getPrisma();
   if (!db) {
@@ -137,7 +142,7 @@ export const list = asyncHandler(async (_req: Request, res: Response): Promise<v
       id: img.id,
       slug: img.slug,
       originalName: img.originalName,
-      trackingUrl: `${baseUrl}/api/image-logger/serve/${img.slug}`,
+      trackingUrl: `${baseUrl}/i/${img.slug}${path.extname(img.filePath)}`,
       hitCount: img._count.hits,
       createdAt: img.createdAt.toISOString(),
     })),

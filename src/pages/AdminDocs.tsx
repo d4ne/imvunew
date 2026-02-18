@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import MDEditor from '@uiw/react-md-editor';
+import '@uiw/react-md-editor/markdown-editor.css';
 import PageHeader from '../components/PageHeader';
 import { apiUrl } from '../lib/api';
 
@@ -76,7 +78,7 @@ export default function AdminDocs() {
     e.preventDefault();
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      setError('Title is required');
+      setError('Question is required');
       return;
     }
     setSubmitting(true);
@@ -140,126 +142,122 @@ export default function AdminDocs() {
   };
 
   return (
-    <div style={{ padding: 'var(--page-padding)' }} className="w-full">
+    <div className="page w-full">
       <PageHeader
         breadcrumbs={['Admin']}
-        title="Docs"
-        subtitle="Add, edit, and remove documentation pages. They appear on the Docs page."
+        title="FAQ"
+        subtitle="Add, edit, and remove frequently asked questions. They appear on the FAQ page."
       />
 
-      <div className="content-card mb-6">
-        <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">
-          {editingId ? 'Edit doc' : 'Add doc'}
-        </h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="doc-title" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-              Title
-            </label>
-            <input
-              id="doc-title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Getting started"
-              className="w-full px-3 py-2 rounded-[var(--radius)] bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring 2px focus:ring-[var(--accent)] focus:border-transparent"
-              disabled={submitting}
-            />
-          </div>
-          <div>
-            <label htmlFor="doc-slug" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-              Slug (URL path, optional — auto-generated from title if empty)
-            </label>
-            <input
-              id="doc-slug"
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              placeholder="e.g. getting-started"
-              className="w-full px-3 py-2 rounded-[var(--radius)] bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring 2px focus:ring-[var(--accent)] focus:border-transparent"
-              disabled={submitting}
-            />
-          </div>
-          <div>
-            <label htmlFor="doc-content" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-              Content
-            </label>
-            <textarea
-              id="doc-content"
-              rows={12}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your doc content here. Plain text or Markdown."
-              className="w-full px-3 py-2 rounded-[var(--radius)] bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring 2px focus:ring-[var(--accent)] focus:border-transparent resize-y"
-              disabled={submitting}
-            />
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-4 py-2 rounded-[var(--radius)] bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
-            >
-              {submitting ? (editingId ? 'Saving…' : 'Adding…') : editingId ? 'Save changes' : 'Add doc'}
-            </button>
-            {editingId && (
-              <button
-                type="button"
-                onClick={clearForm}
-                className="px-4 py-2 rounded-[var(--radius)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors"
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
+      {error && <div className="admin-error">{error}</div>}
 
-      {error && (
-        <div className="mb-4 px-4 py-3 rounded-[var(--radius)] bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-
-      <div className="content-card">
-        <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">All docs</h3>
-        {loading ? (
-          <p className="text-[var(--text-muted)] text-sm">Loading…</p>
-        ) : docs.length === 0 ? (
-          <p className="text-[var(--text-muted)] text-sm">No docs yet. Add one above.</p>
-        ) : (
-          <div className="space-y-3">
-            {docs.map((doc) => (
-              <div
-                key={doc.id}
-                className="flex flex-wrap items-center gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg-tertiary)] p-4"
-              >
-                <div className="min-w-0 flex-1">
-                  <span className="font-medium text-[var(--text-primary)]">{doc.title}</span>
-                  <span className="text-[var(--text-muted)] text-sm ml-2">/{doc.slug}</span>
-                  <p className="text-[var(--text-muted)] text-xs mt-0.5">{formatDate(doc.updatedAt)}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleEdit(doc.id)}
-                    className="px-3 py-1.5 rounded-[var(--radius)] border border-[var(--border)] text-[var(--text-secondary)] text-sm hover:bg-[var(--bg-elevated)] transition-colors"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(doc.id)}
-                    disabled={removingId === doc.id}
-                    className="px-3 py-1.5 rounded text-red-400 hover:bg-red-500/10 disabled:opacity-50 text-sm transition-colors"
-                  >
-                    {removingId === doc.id ? '…' : 'Delete'}
-                  </button>
+      <div className="dashboard-sections">
+        <section className="dashboard-section">
+          <header className="dashboard-section-header">
+            <h2 className="dashboard-section-title">{editingId ? 'Edit question' : 'Add question'}</h2>
+            <p className="dashboard-section-desc">
+              {editingId ? 'Update the question and answer below.' : 'Create a new FAQ entry. Answer supports Markdown.'}
+            </p>
+          </header>
+          <div className="content-card">
+            <form onSubmit={handleSubmit} className="ad-form">
+              <div className="ad-field">
+                <label htmlFor="doc-title" className="ad-label">Question</label>
+                <input
+                  id="doc-title"
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. How do I get started?"
+                  className="ad-input"
+                  disabled={submitting}
+                />
+              </div>
+              <div className="ad-field">
+                <label htmlFor="doc-slug" className="ad-label">Slug (optional)</label>
+                <p className="ad-hint">For direct links. Auto-generated from question if empty.</p>
+                <input
+                  id="doc-slug"
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="e.g. getting-started"
+                  className="ad-input"
+                  disabled={submitting}
+                />
+              </div>
+              <div className="ad-field">
+                <label htmlFor="doc-content" className="ad-label">Answer</label>
+                <p className="ad-hint">Markdown: **bold**, *italic*, lists, [links](url), headings.</p>
+                <div data-color-mode="dark" className="faq-editor-wrap">
+                  <MDEditor
+                    id="doc-content"
+                    value={content}
+                    onChange={(v) => setContent(v ?? '')}
+                    height={280}
+                    preview="live"
+                    hideToolbar={false}
+                    visibleDragbar={false}
+                    textareaProps={{ placeholder: 'Write the answer in Markdown…', disabled: submitting }}
+                  />
                 </div>
               </div>
-            ))}
+              <div className="ad-actions">
+                <button type="submit" disabled={submitting} className="ad-btn">
+                  {submitting ? (editingId ? 'Saving…' : 'Adding…') : editingId ? 'Save changes' : 'Add question'}
+                </button>
+                {editingId && (
+                  <button type="button" onClick={clearForm} className="ad-btn ad-btn-cancel">
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
           </div>
-        )}
+        </section>
+
+        <section className="dashboard-section">
+          <header className="dashboard-section-header">
+            <h2 className="dashboard-section-title">All questions</h2>
+            <p className="dashboard-section-desc">Edit or delete entries. They appear on the public FAQ page.</p>
+          </header>
+          <div className="dashboard-card">
+            {loading ? (
+              <div className="dashboard-card-loading">
+                <span className="dashboard-card-loading-dot" />
+                <span className="dashboard-card-loading-dot" />
+                <span className="dashboard-card-loading-dot" />
+              </div>
+            ) : docs.length === 0 ? (
+              <p className="dashboard-card-empty">No questions yet. Add one above.</p>
+            ) : (
+              <div className="ad-list">
+                {docs.map((doc) => (
+                  <div key={doc.id} className="ad-item">
+                    <div className="ad-item-main">
+                      <span className="ad-item-title">{doc.title}</span>
+                      <span className="ad-item-slug">/{doc.slug}</span>
+                      <p className="ad-item-meta">{formatDate(doc.updatedAt)}</p>
+                    </div>
+                    <div className="ad-item-actions">
+                      <button type="button" onClick={() => handleEdit(doc.id)} className="ad-btn-edit">
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(doc.id)}
+                        disabled={removingId === doc.id}
+                        className="ad-btn-delete"
+                      >
+                        {removingId === doc.id ? '…' : 'Delete'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

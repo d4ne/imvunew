@@ -87,36 +87,54 @@ export default function Docs() {
     }
   };
 
+  const docIcon = (
+    <svg className="docs-list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+  );
+
   // Single doc view
   if (slug) {
     return (
-      <div style={{ padding: 'var(--page-padding)' }} className="w-full">
-        <PageHeader
-          breadcrumbs={['Support', 'Docs']}
-          title={doc?.title ?? slug}
-          subtitle={doc ? formatDate(doc.updatedAt) : undefined}
-        />
+      <div className="page w-full">
+        <div className="docs-back-wrap mb-6">
+          <Link to="/docs" className="docs-back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Docs
+          </Link>
+        </div>
         {loading ? (
-          <p className="text-[var(--text-muted)] text-sm">Loading…</p>
+          <div className="max-w-4xl">
+            <div className="content-card">
+              <p className="text-[var(--text-muted)] text-sm">Loading…</p>
+            </div>
+          </div>
         ) : error ? (
-          <div className="content-card">
-            <p className="text-red-400 text-sm">{error}</p>
-            <Link to="/docs" className="inline-block mt-3 text-[var(--accent)] hover:underline text-sm">
-              ← Back to docs
-            </Link>
+          <div className="max-w-4xl">
+            <div className="content-card">
+              <p className="text-red-400 text-sm mb-4">{error}</p>
+              <Link to="/docs" className="docs-back-link">
+                ← Back to docs
+              </Link>
+            </div>
           </div>
         ) : doc ? (
-          <div className="content-card">
-            <div
-              className="prose-doc text-[var(--text-primary)] whitespace-pre-wrap break-words"
-              style={{ maxWidth: '70ch' }}
-            >
-              {doc.content}
+          <>
+            <header className="docs-article-header mb-6">
+              <h1 className="docs-article-title">{doc.title}</h1>
+              <p className="docs-article-meta">Updated {formatDate(doc.updatedAt)}</p>
+            </header>
+            <div className="max-w-4xl">
+              <div className="content-card docs-article-card">
+                <div className="docs-prose">
+                  {doc.content}
+                </div>
+              </div>
             </div>
-            <Link to="/docs" className="inline-block mt-6 text-[var(--accent)] hover:underline text-sm">
-              ← Back to docs
-            </Link>
-          </div>
+          </>
         ) : null}
       </div>
     );
@@ -124,30 +142,30 @@ export default function Docs() {
 
   // List view
   return (
-    <div style={{ padding: 'var(--page-padding)' }} className="w-full">
+    <div className="page w-full">
       <PageHeader
         breadcrumbs={['Support']}
         title="Docs"
         subtitle="Documentation and guides"
       />
-      <div className="content-card">
+      <div className="max-w-4xl">
         {list.length === 0 ? (
-          <p className="text-[var(--text-muted)] text-sm">No docs yet.</p>
+          <div className="content-card docs-empty-card">
+            <span className="docs-empty-icon">{docIcon}</span>
+            <p className="docs-empty-text">No docs yet.</p>
+            <p className="docs-empty-hint">Admins can add docs from Admin → Docs.</p>
+          </div>
         ) : (
-          <ul className="space-y-2">
+          <div className="quick-grid">
             {list.map((d) => (
-              <li key={d.id}>
-                <Link
-                  to={`/docs/${d.slug}`}
-                  className="block rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg-tertiary)] p-3 hover:border-[var(--accent)] hover:bg-[var(--bg-elevated)] transition-colors"
-                >
-                  <span className="font-medium text-[var(--text-primary)]">{d.title}</span>
-                  <span className="text-[var(--text-muted)] text-sm ml-2">/{d.slug}</span>
-                  <p className="text-[var(--text-muted)] text-xs mt-1">{formatDate(d.updatedAt)}</p>
-                </Link>
-              </li>
+              <Link key={d.id} to={`/docs/${d.slug}`} className="quick-card">
+                <div className="quick-card-icon-wrap">{docIcon}</div>
+                <h4 className="quick-card-label">{d.title}</h4>
+                <p className="quick-card-desc">/{d.slug} · {formatDate(d.updatedAt)}</p>
+                <span className="quick-card-action">Open</span>
+              </Link>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>

@@ -79,6 +79,12 @@ const navIcons = {
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   ),
+  search: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  ),
 };
 
 const nav = [
@@ -93,19 +99,23 @@ const nav = [
     links: [
       { to: '/image-logger', label: 'Image Logger', icon: 'image' as const },
       { to: '/booter', label: 'Booter', icon: 'zap' as const },
+      { to: '/user-lookup', label: 'User lookup', icon: 'userPlus' as const },
     ],
   },
   {
     section: 'Support',
     links: [
-      { to: '/docs', label: 'Docs', icon: 'book' as const },
+      { to: '/faq', label: 'FAQ', icon: 'book' as const },
     ],
   },
 ];
 
 const adminNav = [
   { to: '/admin/blacklist', label: 'Blacklist', icon: 'list' as const },
-  { to: '/admin/docs', label: 'Docs', icon: 'book' as const },
+  { to: '/admin/features', label: 'Features', icon: 'shield' as const },
+  { to: '/admin/room-scanner', label: 'Room Scanner', icon: 'search' as const },
+  { to: '/admin/imvu-accounts', label: 'IMVU Accounts', icon: 'link' as const },
+  { to: '/admin/faq', label: 'FAQ', icon: 'book' as const },
 ];
 
 export default function Sidebar() {
@@ -113,23 +123,23 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar w-[var(--sidebar-width)] shrink-0 flex flex-col h-screen overflow-hidden">
-      <div className="px-5 py-5 border-b border-[var(--border)] shrink-0">
+      <div className="sidebar-brand">
         <Link to="/dashboard" className="sidebar-logo">
           <span className="sidebar-logo-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
             </svg>
           </span>
-          Xanoty
+          <span className="sidebar-logo-text">Xanoty</span>
         </Link>
       </div>
 
-      <nav className="flex-1 min-h-0 overflow-hidden py-5">
+      <nav className="sidebar-nav flex-1 min-h-0 overflow-hidden">
         {nav.map(({ section, links }) => (
-          <div key={section} className="mb-7">
+          <div key={section} className="sidebar-nav-block">
             <p className="sidebar-nav-section">{section}</p>
-            <ul className="space-y-0.5">
+            <ul className="sidebar-nav-list">
               {links.map(({ to, label, icon }) => (
                 <li key={label}>
                   <NavLink
@@ -139,7 +149,7 @@ export default function Sidebar() {
                     }
                   >
                     <span className="sidebar-nav-icon">{navIcons[icon]}</span>
-                    <span className="truncate">{label}</span>
+                    <span className="sidebar-nav-label">{label}</span>
                   </NavLink>
                 </li>
               ))}
@@ -147,9 +157,9 @@ export default function Sidebar() {
           </div>
         ))}
         {Boolean(user?.isAdmin) && (
-          <div className="mb-7">
+          <div className="sidebar-nav-block sidebar-nav-block-admin">
             <p className="sidebar-nav-section">Admin</p>
-            <ul className="space-y-0.5">
+            <ul className="sidebar-nav-list">
               {adminNav.map(({ to, label, icon }) => (
                 <li key={label}>
                   <NavLink
@@ -159,7 +169,7 @@ export default function Sidebar() {
                     }
                   >
                     <span className="sidebar-nav-icon">{navIcons[icon]}</span>
-                    <span className="truncate">{label}</span>
+                    <span className="sidebar-nav-label">{label}</span>
                   </NavLink>
                 </li>
               ))}
@@ -168,23 +178,26 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <div className="sidebar-footer shrink-0 border-t border-[var(--border)] h-14 px-4 flex items-center gap-3">
-        <div className="flex-1 min-w-0 flex items-center gap-2">
-          <span className="truncate text-sm font-medium text-[var(--text-primary)]">
+      <div className="sidebar-footer">
+        <div className="sidebar-footer-avatar" aria-hidden>
+          {(user?.username ?? 'G').slice(0, 2).toUpperCase()}
+        </div>
+        <div className="sidebar-footer-user">
+          <span className="sidebar-footer-name" title={user?.username ?? undefined}>
             {user?.username ?? 'Guest'}
           </span>
-          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-[var(--accent-muted)] text-[var(--accent)]">
-            {user?.isAdmin ? 'Admin' : 'Access'}
+          <span className={`sidebar-footer-badge ${user?.isAdmin ? 'sidebar-footer-badge-admin' : ''}`}>
+            {user?.isAdmin ? 'Admin' : 'User'}
           </span>
         </div>
         <button
           type="button"
           onClick={logout}
-          className="shrink-0 p-2 rounded-[var(--radius)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors duration-150"
+          className="sidebar-footer-logout"
           title="Log out"
           aria-label="Log out"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
