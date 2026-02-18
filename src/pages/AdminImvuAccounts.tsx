@@ -251,84 +251,65 @@ export default function AdminImvuAccounts() {
       {saveSuccess && <div className="mb-4 p-3 rounded bg-green-600/20 text-green-600 dark:text-green-400">{saveSuccess}</div>}
 
       <div className="dashboard-sections">
-        <section className="dashboard-section" style={{ overflow: 'visible' }}>
+        <section className="dashboard-section">
           <header className="dashboard-section-header">
             <h2 className="dashboard-section-title">Try login (get cookie)</h2>
             <p className="dashboard-section-desc">
               Log in with your IMVU username and password. The account is saved automatically on success.
             </p>
           </header>
-          <div className="content-card" style={{ overflow: 'visible', minHeight: 120 }}>
-            <form
-              id="try-login-form"
-              onSubmit={handleTryLogin}
-              className="ad-form flex flex-col gap-4 w-full max-w-md"
-              autoComplete="off"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="try-username" className="ad-label text-sm font-medium text-[var(--text-secondary)]">IMVU username</label>
-                  <input
-                    id="try-username"
-                    name="username"
-                    type="text"
-                    autoComplete="off"
-                    value={tryUsername}
-                    onChange={(e) => setTryUsername(e.target.value)}
-                    className="ad-input h-9 w-full"
-                    placeholder="IMVU username"
-                    disabled={tryLoginLoading}
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="try-password" className="ad-label text-sm font-medium text-[var(--text-secondary)]">Password</label>
-                  <input
-                    id="try-password"
-                    name="password"
-                    type="password"
-                    autoComplete="new-password"
-                    value={tryPassword}
-                    onChange={(e) => setTryPassword(e.target.value)}
-                    className="ad-input h-9 w-full"
-                    placeholder="Password"
-                    disabled={tryLoginLoading}
-                  />
-                </div>
+          <div className="content-card">
+            <form onSubmit={handleTryLogin} className="ad-form" autoComplete="off" style={{ display: 'block', maxWidth: 480 }}>
+              <div className="ad-field">
+                <label htmlFor="try-username" className="ad-label">IMVU username</label>
+                <input
+                  id="try-username"
+                  name="username"
+                  type="text"
+                  autoComplete="off"
+                  value={tryUsername}
+                  onChange={(e) => setTryUsername(e.target.value)}
+                  className="ad-input"
+                  placeholder="IMVU username"
+                  disabled={tryLoginLoading}
+                />
+              </div>
+              <div className="ad-field">
+                <label htmlFor="try-password" className="ad-label">Password</label>
+                <input
+                  id="try-password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={tryPassword}
+                  onChange={(e) => setTryPassword(e.target.value)}
+                  className="ad-input"
+                  placeholder="Password"
+                  disabled={tryLoginLoading}
+                />
+              </div>
+              <div className="ad-actions" style={{ marginTop: 12 }}>
+                <button
+                  type="submit"
+                  disabled={tryLoginLoading}
+                  className="ad-btn"
+                  style={{
+                    minWidth: 140,
+                    minHeight: 44,
+                    padding: '10px 20px',
+                    backgroundColor: '#8b5cf6',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    fontSize: 16,
+                    fontWeight: 600,
+                    cursor: tryLoginLoading ? 'wait' : 'pointer',
+                  }}
+                >
+                  {tryLoginLoading ? 'Trying…' : 'Try login'}
+                </button>
               </div>
             </form>
-            <div
-              style={{
-                marginTop: 16,
-                padding: 12,
-                border: '2px solid var(--accent, #8b5cf6)',
-                borderRadius: 8,
-                background: 'var(--bg-secondary, rgba(0,0,0,0.2))',
-              }}
-              data-try-login-area
-            >
-              <button
-                type="submit"
-                form="try-login-form"
-                disabled={tryLoginLoading}
-                className="ad-btn"
-                data-try-login-btn
-                style={{
-                  display: 'inline-block',
-                  minWidth: 160,
-                  minHeight: 48,
-                  padding: '12px 24px',
-                  cursor: tryLoginLoading ? 'wait' : 'pointer',
-                  backgroundColor: 'var(--accent, #8b5cf6)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontSize: 16,
-                  fontWeight: 600,
-                }}
-              >
-                {tryLoginLoading ? 'Trying…' : 'Try login'}
-              </button>
-            </div>
             {tryLoginResult && (
               <div className="mt-4 p-4 rounded bg-[var(--bg-secondary)] text-sm">
                 {tryLoginResult.message && <p className="text-[var(--text-muted)] mb-2">{tryLoginResult.message}</p>}

@@ -1,15 +1,19 @@
-const raw = (import.meta.env.VITE_API_URL ?? '').trim();
-// Ignore misconfigured values (e.g. whole .env line pasted, or "VITE_API_URL=...")
-const API_BASE =
-  raw &&
-  !raw.includes('VITE_API_URL=') &&
-  (raw.startsWith('http://') || raw.startsWith('https://'))
-    ? raw.replace(/\/+$/, '')
-    : '';
+/** API base URL. In browser always use current origin so production works like localhost (same-origin). */
+function getApiBase(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+  const raw = (import.meta.env.VITE_API_URL ?? '').trim();
+  if (raw && !raw.includes('VITE_API_URL=') && (raw.startsWith('http://') || raw.startsWith('https://'))) {
+    return raw.replace(/\/+$/, '');
+  }
+  return '';
+}
 
 export function apiUrl(path: string): string {
+  const base = getApiBase();
   const p = path.startsWith('/') ? path : `/${path}`;
-  return API_BASE ? `${API_BASE}${p}` : p;
+  return base ? `${base}${p}` : p;
 }
 
 const FETCH_TIMEOUT_MS = 15000;
