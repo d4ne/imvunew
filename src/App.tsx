@@ -4,14 +4,8 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Blacklist from './pages/Blacklist';
-import RoomLogs from './pages/RoomLogs';
-import RoomHistory from './pages/RoomHistory';
-import ChatLogs from './pages/ChatLogs';
-import InviteExploit from './pages/InviteExploit';
-import SpyExploit from './pages/SpyExploit';
 import Booter from './pages/Booter';
 import ImageLogger from './pages/ImageLogger';
-import Invite from './pages/Invite';
 import Docs from './pages/Docs';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -62,14 +56,8 @@ export default function App() {
           <Route index element={<Navigate to="/admin/blacklist" replace />} />
           <Route path="blacklist" element={<Blacklist />} />
         </Route>
-        <Route path="room-logs" element={<RoomLogs />} />
-        <Route path="room-history" element={<RoomHistory />} />
-        <Route path="chat-logs" element={<ChatLogs />} />
         <Route path="image-logger" element={<ImageLogger />} />
-        <Route path="invite-exploit" element={<InviteExploit />} />
-        <Route path="spy-exploit" element={<SpyExploit />} />
         <Route path="booter" element={<Booter />} />
-        <Route path="invite" element={<Invite />} />
         <Route path="docs" element={<Docs />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

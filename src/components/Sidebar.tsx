@@ -91,19 +91,8 @@ const nav = [
   {
     section: 'Features',
     links: [
-      { to: '/room-logs', label: 'Room Logs', icon: 'folder' as const },
-      { to: '/room-history', label: 'Room History', icon: 'clock' as const },
-      { to: '/chat-logs', label: 'Chat Logs', icon: 'message' as const },
       { to: '/image-logger', label: 'Image Logger', icon: 'image' as const },
-      { to: '/invite-exploit', label: 'Invite Exploit', icon: 'link' as const },
-      { to: '/spy-exploit', label: 'Spy Exploit', icon: 'eye' as const },
       { to: '/booter', label: 'Booter', icon: 'zap' as const },
-    ],
-  },
-  {
-    section: 'Access',
-    links: [
-      { to: '/invite', label: 'Invite', icon: 'userPlus' as const },
     ],
   },
   {
