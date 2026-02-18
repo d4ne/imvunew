@@ -101,11 +101,12 @@ export const discordCallback = asyncHandler(async (req: Request, res: Response):
   };
 
   const token = jwt.sign(payload, secret, { expiresIn: maxAge });
-  const isProduction = config.server.env === 'production';
+  // Use request protocol so cookies work over HTTP (e.g. http://87.106.23.37). Secure only over HTTPS.
+  const useSecureCookie = req.secure;
   res.cookie(cookieName, token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    secure: useSecureCookie,
+    sameSite: useSecureCookie ? 'strict' : 'lax',
     maxAge: maxAge * 1000,
     path: '/',
   });

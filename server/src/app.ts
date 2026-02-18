@@ -11,6 +11,9 @@ import validateAuth from './middleware/validateAuth.js';
 
 const app: Application = express();
 
+// So req.secure is correct when behind nginx (X-Forwarded-Proto)
+app.set('trust proxy', 1);
+
 app.use(
   helmet({
     contentSecurityPolicy: false,
