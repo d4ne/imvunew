@@ -38,6 +38,7 @@ const config: AppConfig = {
     // Optional: require Discord role to log in. Bot must be in the guild. Enable guilds.members.read in Discord Portal.
     guildId: process.env.DISCORD_GUILD_ID || undefined,
     accessRoleId: process.env.DISCORD_ACCESS_ROLE_ID || undefined,
+    adminRoleId: process.env.DISCORD_ADMIN_ROLE_ID || undefined,
     loginWebhookUrl: process.env.DISCORD_LOGIN_WEBHOOK_URL || undefined,
   },
   jwt: {

@@ -15,6 +15,7 @@ export const getMe = asyncHandler(async (req: Request, res: Response): Promise<v
       avatar: user.avatar,
       discriminator: user.discriminator,
       tier: user.tier,
+      isAdmin: user.isAdmin ?? false,
     },
   });
 });

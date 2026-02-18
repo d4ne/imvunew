@@ -25,6 +25,8 @@ export interface DiscordConfig {
   guildId?: string;
   /** Role ID required to log in (e.g. "access" role). Application must be in the guild (bot invited). */
   accessRoleId?: string;
+  /** Role ID for admin access (e.g. admin-only pages and blacklist). Requires guildId; requests guilds.members.read. */
+  adminRoleId?: string;
   /** Optional Discord webhook URL to post when a user logs in (e.g. for notifications). */
   loginWebhookUrl?: string;
 }
@@ -251,6 +253,7 @@ export interface JwtPayload {
   avatar?: string;
   discriminator?: string;
   tier: 'free' | 'plus' | 'premium';
+  isAdmin?: boolean;
   iat?: number;
   exp?: number;
 }

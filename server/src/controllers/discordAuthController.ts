@@ -15,7 +15,8 @@ export const redirectToDiscord = asyncHandler(async (_req: Request, res: Respons
     return;
   }
   const scopes = ['identify', 'email'];
-  if (config.discord.guildId && config.discord.accessRoleId) {
+  const { guildId, accessRoleId, adminRoleId } = config.discord;
+  if (guildId && (accessRoleId || adminRoleId)) {
     scopes.push('guilds.members.read');
   }
   const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scopes.join('%20')}`;
@@ -70,9 +71,10 @@ export const discordCallback = asyncHandler(async (req: Request, res: Response):
   const discordUser = userRes.data;
   const accessToken = tokenRes.data.access_token as string;
 
-  // Require Discord role if configured (guild + role ID). Bot must be in the guild.
-  const { guildId, accessRoleId } = config.discord;
-  if (guildId && accessRoleId) {
+  // Require Discord role if configured; also fetch roles for admin check.
+  const { guildId, accessRoleId, adminRoleId } = config.discord;
+  let roles: string[] = [];
+  if (guildId && (accessRoleId || adminRoleId)) {
     const memberRes = await axios.get(
       `${DISCORD_API}/users/@me/guilds/${guildId}/member`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -80,13 +82,15 @@ export const discordCallback = asyncHandler(async (req: Request, res: Response):
       logger.warn(`Discord guild member fetch failed: ${e.response?.status} ${e.response?.data?.message || e.message}`);
       return null;
     });
-    const roles: string[] = memberRes?.data?.roles ?? [];
-    if (!roles.includes(accessRoleId)) {
+    roles = memberRes?.data?.roles ?? [];
+    if (accessRoleId && !roles.includes(accessRoleId)) {
       logger.info(`Login denied: user ${discordUser.id} missing required role ${accessRoleId}`);
       res.redirect(`${frontendUrl}/login?error=access_denied`);
       return;
     }
   }
+  const isAdmin = !!(adminRoleId && roles.includes(adminRoleId));
+
   const avatarHash = discordUser.avatar;
   const avatarUrl = avatarHash
     ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${avatarHash}.png`
@@ -98,6 +102,7 @@ export const discordCallback = asyncHandler(async (req: Request, res: Response):
     avatar: avatarUrl,
     discriminator: discordUser.discriminator,
     tier: 'free',
+    isAdmin,
   };
 
   const token = jwt.sign(payload, secret, { expiresIn: maxAge });

@@ -100,6 +100,8 @@ Only users who are in a specific Discord server **and** have a specific role can
 
 ## 2. Hosting on Ubuntu
 
+**→ For one ordered guide (git pull, PostgreSQL install, env edit, build, PM2, nginx), see [SETUP-UBUNTU.md](SETUP-UBUNTU.md).**
+
 ### Assumptions
 
 - Ubuntu 22.04 (or similar)

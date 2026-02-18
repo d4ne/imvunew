@@ -8,6 +8,7 @@ export interface User {
   avatar?: string;
   discriminator?: string;
   tier: Tier;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {

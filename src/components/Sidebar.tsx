@@ -74,6 +74,11 @@ const navIcons = {
       <line x1="22" y1="11" x2="16" y2="11" />
     </svg>
   ),
+  shield: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
 };
 
 const nav = [
@@ -81,7 +86,6 @@ const nav = [
     section: 'Overview',
     links: [
       { to: '/dashboard', label: 'Dashboard', icon: 'layout' as const },
-      { to: '/blacklist', label: 'Blacklist', icon: 'list' as const },
     ],
   },
   {
@@ -108,6 +112,10 @@ const nav = [
       { to: '/docs', label: 'Docs', icon: 'book' as const },
     ],
   },
+];
+
+const adminNav = [
+  { to: '/admin/blacklist', label: 'Blacklist', icon: 'list' as const },
 ];
 
 export default function Sidebar() {
@@ -148,6 +156,26 @@ export default function Sidebar() {
             </ul>
           </div>
         ))}
+        {user?.isAdmin && (
+          <div className="mb-7">
+            <p className="sidebar-nav-section">Admin</p>
+            <ul className="space-y-0.5">
+              {adminNav.map(({ to, label, icon }) => (
+                <li key={label}>
+                  <NavLink
+                    to={to}
+                    className={({ isActive }) =>
+                      `sidebar-nav-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    <span className="sidebar-nav-icon">{navIcons[icon]}</span>
+                    <span className="truncate">{label}</span>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </nav>
 
       <div className="sidebar-footer mt-auto border-t border-[var(--border)] h-14 px-4 flex items-center gap-3">
@@ -156,7 +184,7 @@ export default function Sidebar() {
             {user?.username ?? 'Guest'}
           </span>
           <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-[var(--accent-muted)] text-[var(--accent)]">
-            Access
+            {user?.isAdmin ? 'Admin' : 'Access'}
           </span>
         </div>
         <button

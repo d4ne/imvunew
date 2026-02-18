@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -27,6 +27,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-primary)]">
+        <span className="text-sm text-[var(--text-muted)] animate-pulse">Loading…</span>
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  if (!user.isAdmin) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <Routes>
@@ -42,8 +56,12 @@ export default function App() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="overview" element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="safelist" element={<Navigate to="/blacklist" replace />} />
-        <Route path="blacklist" element={<Blacklist />} />
+        <Route path="safelist" element={<Navigate to="/admin/blacklist" replace />} />
+        <Route path="blacklist" element={<Navigate to="/admin/blacklist" replace />} />
+        <Route path="admin" element={<AdminRoute><Outlet /></AdminRoute>}>
+          <Route index element={<Navigate to="/admin/blacklist" replace />} />
+          <Route path="blacklist" element={<Blacklist />} />
+        </Route>
         <Route path="room-logs" element={<RoomLogs />} />
         <Route path="room-history" element={<RoomHistory />} />
         <Route path="chat-logs" element={<ChatLogs />} />
