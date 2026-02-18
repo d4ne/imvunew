@@ -72,8 +72,9 @@ export default function AdminImvuAccounts() {
     if (first?.status !== 201 || !first?.body || !(first?.cookieString || first?.cookies?.length)) return null;
     const b = first.body;
     const entry = b?.id && b?.denormalized?.[b.id];
-    const sauce = entry?.data?.sauce ?? '';
-    const userUrl = entry?.data?.user?.id ?? '';
+    const entryObj = entry && typeof entry === 'object' && 'data' in entry ? entry : undefined;
+    const sauce = entryObj?.data?.sauce ?? '';
+    const userUrl = entryObj?.data?.user?.id ?? '';
     const cid = userUrl ? (userUrl.match(/\/cid\/(\d+)/)?.[1] ?? userUrl.split('/').pop() ?? '') : '';
     const cookieVal = first.cookieString ?? (first.cookies || []).map((c: string) => c.split(';')[0].trim()).join('; ');
     if (!cid && !sauce && !cookieVal) return null;

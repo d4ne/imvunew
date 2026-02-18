@@ -44,7 +44,7 @@ const LANGUAGE_OPTIONS = [
 ];
 
 export default function AdminRoomScanner() {
-  const [config, setConfig] = useState<RoomScannerConfig>(DEFAULTS);
+  const [, setConfig] = useState<RoomScannerConfig>(DEFAULTS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);

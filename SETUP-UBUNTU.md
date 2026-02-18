@@ -253,13 +253,15 @@ Open in browser: **http://YOUR_IP_OR_DOMAIN** (or https if you use SSL). Sign in
 
 ```bash
 cd /var/www/imvuweb
-git pull
+git fetch origin
+git reset --hard origin/main
 npm ci
 cd server && npm ci && cd ..
 npm run build
-cd server && npm run build && npm run db:push && pm2 restart xanoty-api
+cd server && npm run build && pm2 restart xanoty-api
 cd ..
 ```
 
-- Use `npm run db:push` if the Prisma schema (e.g. `server/prisma/schema.prisma`) changed; otherwise you can skip it.
+- **If you get "Your local changes would be overwritten by merge"** (e.g. `package-lock.json` changed on the server): use `git fetch origin` and `git reset --hard origin/main` as above so the server always matches the repo; then run the rest. Your `server/.env` is not in git, so it won’t be touched.
+- Use `npm run db:push` (in `server/`) if the Prisma schema changed; otherwise skip it.
 - If only frontend or API code changed, you can skip `npm run db:push`.
