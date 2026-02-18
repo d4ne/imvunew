@@ -273,7 +273,7 @@ export default function AdminImvuAccounts() {
               <div style={{ flex: '1 1 200px', minWidth: 150, marginBottom: 0 }}>
                 <label
                   htmlFor="try-username"
-                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}
+                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'var(--text-secondary, #a1a1aa)' }}
                 >
                   IMVU username
                 </label>
@@ -292,10 +292,10 @@ export default function AdminImvuAccounts() {
                     minHeight: 40,
                     padding: '8px 12px',
                     fontSize: 16,
-                    color: '#f4f4f5',
-                    backgroundColor: '#27272a',
-                    border: '1px solid #3f3f46',
-                    borderRadius: 8,
+                    color: 'var(--text-primary, #f4f4f5)',
+                    backgroundColor: 'var(--bg-tertiary, #141418)',
+                    border: '1px solid var(--border, #222228)',
+                    borderRadius: 'var(--radius, 8px)',
                     boxSizing: 'border-box',
                   }}
                 />
@@ -303,7 +303,7 @@ export default function AdminImvuAccounts() {
               <div style={{ flex: '1 1 200px', minWidth: 150, marginBottom: 0 }}>
                 <label
                   htmlFor="try-password"
-                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}
+                  style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: 'var(--text-secondary, #a1a1aa)' }}
                 >
                   Password
                 </label>
@@ -322,10 +322,10 @@ export default function AdminImvuAccounts() {
                     minHeight: 40,
                     padding: '8px 12px',
                     fontSize: 16,
-                    color: '#f4f4f5',
-                    backgroundColor: '#27272a',
-                    border: '1px solid #3f3f46',
-                    borderRadius: 8,
+                    color: 'var(--text-primary, #f4f4f5)',
+                    backgroundColor: 'var(--bg-tertiary, #141418)',
+                    border: '1px solid var(--border, #222228)',
+                    borderRadius: 'var(--radius, 8px)',
                     boxSizing: 'border-box',
                   }}
                 />
@@ -339,10 +339,10 @@ export default function AdminImvuAccounts() {
                     minWidth: 120,
                     minHeight: 40,
                     padding: '10px 20px',
-                    backgroundColor: '#8b5cf6',
+                    backgroundColor: 'var(--accent, #6366f1)',
                     color: '#ffffff',
                     border: 'none',
-                    borderRadius: 8,
+                    borderRadius: 'var(--radius, 8px)',
                     fontSize: 16,
                     fontWeight: 600,
                     cursor: tryLoginLoading ? 'wait' : 'pointer',
