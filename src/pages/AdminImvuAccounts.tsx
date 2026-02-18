@@ -261,38 +261,43 @@ export default function AdminImvuAccounts() {
           <div className="content-card">
             <form
               onSubmit={handleTryLogin}
-              className="ad-form grid grid-cols-[1fr_1fr_1fr] gap-x-4 gap-y-2 items-end w-full"
+              className="ad-form flex flex-col gap-4 w-full max-w-md"
               autoComplete="off"
             >
-              <label htmlFor="try-username" className="ad-label text-sm font-medium text-[var(--text-secondary)]">Username</label>
-              <label htmlFor="try-password" className="ad-label text-sm font-medium text-[var(--text-secondary)]">Password</label>
-              <span aria-hidden className="invisible text-sm">Submit</span>
-              <input
-                id="try-username"
-                name="username"
-                type="text"
-                autoComplete="off"
-                value={tryUsername}
-                onChange={(e) => setTryUsername(e.target.value)}
-                className="ad-input min-w-0 h-9"
-                placeholder="IMVU username"
-                disabled={tryLoginLoading}
-              />
-              <input
-                id="try-password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                value={tryPassword}
-                onChange={(e) => setTryPassword(e.target.value)}
-                className="ad-input min-w-0 h-9"
-                placeholder="Password"
-                disabled={tryLoginLoading}
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="try-username" className="ad-label text-sm font-medium text-[var(--text-secondary)]">IMVU username</label>
+                  <input
+                    id="try-username"
+                    name="username"
+                    type="text"
+                    autoComplete="off"
+                    value={tryUsername}
+                    onChange={(e) => setTryUsername(e.target.value)}
+                    className="ad-input h-9 w-full"
+                    placeholder="IMVU username"
+                    disabled={tryLoginLoading}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="try-password" className="ad-label text-sm font-medium text-[var(--text-secondary)]">Password</label>
+                  <input
+                    id="try-password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    value={tryPassword}
+                    onChange={(e) => setTryPassword(e.target.value)}
+                    className="ad-input h-9 w-full"
+                    placeholder="Password"
+                    disabled={tryLoginLoading}
+                  />
+                </div>
+              </div>
               <button
                 type="submit"
                 disabled={tryLoginLoading}
-                className="ad-btn h-9 w-full min-w-0 flex items-center justify-center rounded-md font-medium"
+                className="ad-btn h-10 w-full sm:w-auto min-w-[8rem] flex items-center justify-center rounded-md font-medium"
               >
                 {tryLoginLoading ? 'Trying…' : 'Try login'}
               </button>

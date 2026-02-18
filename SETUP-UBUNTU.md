@@ -271,7 +271,29 @@ Open in browser: **http://YOUR_IP_OR_DOMAIN** (or https if you use SSL). Sign in
    - **503** → Database not configured or tables missing. Set `DATABASE_URL` in `server/.env`, run `npm run db:push` in `server/`, then `pm2 restart xanoty-api`.
    - **500** → See `pm2 logs xanoty-api` for the stack trace.
 
-4. **Tables “already in sync” but app still says table missing**  
+4. **`/user-lookup`, `/admin/room-scanner`, `/admin/imvu-accounts` don’t work on Ubuntu**
+
+   These routes need the API and a valid session (admin for the two admin routes). Check:
+
+   - **Frontend build**  
+     If the app was built with `VITE_API_URL=http://localhost:3000`, the browser will call localhost from your PC and fail. On the server, set an empty API URL and rebuild:
+     ```bash
+     cd /var/www/imvuweb
+     echo 'VITE_API_URL=' > .env
+     npm run build
+     ```
+     Then reload the site (hard refresh or clear cache).
+
+   - **Log in on the production URL**  
+     Open **http://YOUR_IP_OR_DOMAIN** (e.g. http://87.106.23.37), click Login, and complete Discord OAuth. The session cookie is per-origin; logging in on localhost doesn’t count.
+
+   - **Admin routes (room-scanner, imvu-accounts)**  
+     Your Discord user must have the role whose ID is in `DISCORD_ADMIN_ROLE_ID` in `server/.env`. If you don’t have that role, you’ll get 403. Ensure `DISCORD_ADMIN_ROLE_ID` is set and your user has that role in the guild.
+
+   - **Cookie not sent**  
+     In DevTools → Application → Cookies, check that the site (e.g. http://87.106.23.37) has a cookie like `xanoty_session`. If not, log in again on that URL. If you use nginx and added `proxy_cookie_path` with `Secure` while the site is HTTP, remove the `Secure` part or the whole line and reload nginx.
+
+5. **Tables “already in sync” but app still says table missing**  
    Force-recreate tables (this **wipes DB data**):
    ```bash
    cd /var/www/imvuweb/server
