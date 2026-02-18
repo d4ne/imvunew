@@ -1,0 +1,21 @@
+// Xanoty – Prisma schema
+// Database: PostgreSQL (recommended). For SQLite use: url = "file:./dev.db" and change provider to "sqlite"
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BlacklistEntry {
+  id        String   @id @default(cuid())
+  identifier String // IMVU username or cid
+  reason    String?  // optional reason
+  addedById String?  // Discord user id who added (from JWT sub)
+  createdAt DateTime @default(now())
+
+  @@unique([identifier])
+  @@map("blacklist_entries")
+}

@@ -4,6 +4,7 @@ import meRoutes from './meRoutes.js';
 import roomsRoutes from './roomsRoutes.js';
 import avatarRoutes from './avatarRoutes.js';
 import usersRoutes from './usersRoutes.js';
+import blacklistRoutes from './blacklistRoutes.js';
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.get('/', (_req: Request, res: Response) => {
       rooms: '/api/rooms/*',
       avatar: '/api/avatar/*',
       users: '/api/users/*',
+      blacklist: '/api/blacklist/*',
     },
   });
 });
@@ -37,5 +39,6 @@ router.use('/me', meRoutes);
 router.use('/rooms', roomsRoutes);
 router.use('/avatar', avatarRoutes);
 router.use('/users', usersRoutes);
+router.use('/blacklist', blacklistRoutes);
 
 export default router;

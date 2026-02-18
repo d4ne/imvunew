@@ -35,12 +35,17 @@ export interface JwtConfig {
   maxAge: number;
 }
 
+export interface DatabaseConfig {
+  url: string;
+}
+
 export interface AppConfig {
   server: ServerConfig;
   imvu: ImvuConfig;
   logging: LoggingConfig;
   discord: DiscordConfig;
   jwt: JwtConfig;
+  database?: DatabaseConfig;
 }
 
 export interface ImvuApiResponse<T = unknown> {

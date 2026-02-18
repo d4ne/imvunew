@@ -47,6 +47,22 @@ Runs at **http://localhost:5173**. Open it → sign in with Discord → you’re
 | `FRONTEND_URL` | `server/.env` | Where to redirect after login (e.g. `http://localhost:5173`). |
 | `JWT_SECRET` | `server/.env` | Session signing; use a long random string in production. |
 | `IMVU_USER_ID` / `IMVU_AUTH_TOKEN` | `server/.env` | Optional; for Room List, Avatar, etc. |
+| `DATABASE_URL` | `server/.env` | Optional; for Blacklist and future features. See [Database](#database) below. |
+
+## Database
+
+The app uses **Prisma** with **PostgreSQL** (recommended) or **SQLite** for storing data like the **Blacklist**.
+
+- **PostgreSQL** (recommended for production): robust, good for multiple features later.  
+  - On Ubuntu: `sudo apt install postgresql`, create a DB and user, then set  
+    `DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/xanoty"` in `server/.env`.  
+  - Run once: `cd server && npm run db:generate && npm run db:push`.
+- **SQLite** (easiest, single file): no separate server.  
+  - In `server/prisma/schema.prisma` set `provider = "sqlite"` and `url = "file:./dev.db"`.  
+  - Set `DATABASE_URL="file:./dev.db"` (or leave Prisma’s default).  
+  - Run: `cd server && npm run db:generate && npm run db:push`.
+
+Without `DATABASE_URL`, the app still runs; Blacklist API returns 503 until a database is configured.
 
 ## API (no Discord bot)
 
@@ -58,6 +74,10 @@ Runs at **http://localhost:5173**. Open it → sign in with Discord → you’re
 - `GET /api/rooms`, `GET /api/rooms/all`, `GET /api/rooms/:roomId/users`, etc.  
 - `GET /api/avatar/:cid`, `POST /api/avatar/batch`, `GET /api/avatar/actions`  
 - `GET /api/users/search?q=...` (returns empty without a database; add Prisma + `DATABASE_URL` to enable)
+- `GET /api/blacklist` – list blacklist entries (auth required)
+- `POST /api/blacklist` – add entry `{ "identifier": "username", "reason": "optional" }` (auth required)
+- `DELETE /api/blacklist/:id` – remove entry (auth required)
+- `GET /api/blacklist/check?identifier=...` – check if identifier is blacklisted (no auth)
 
 ## Project layout
 
