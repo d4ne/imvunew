@@ -259,11 +259,9 @@ export default function AdminImvuAccounts() {
             </p>
           </header>
           <div className="content-card">
-            <form onSubmit={handleTryLogin} autoComplete="off" style={{ display: 'block', maxWidth: 480 }}>
-              <div style={{ marginBottom: 16 }}>
-                <label htmlFor="try-username" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}>
-                  IMVU username
-                </label>
+            <form onSubmit={handleTryLogin} className="ad-form" autoComplete="off" style={{ display: 'block', maxWidth: 480 }}>
+              <div className="ad-field">
+                <label htmlFor="try-username" className="ad-label">IMVU username</label>
                 <input
                   id="try-username"
                   name="username"
@@ -271,26 +269,13 @@ export default function AdminImvuAccounts() {
                   autoComplete="off"
                   value={tryUsername}
                   onChange={(e) => setTryUsername(e.target.value)}
+                  className="ad-input"
                   placeholder="IMVU username"
                   disabled={tryLoginLoading}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    minHeight: 40,
-                    padding: '8px 12px',
-                    fontSize: 16,
-                    color: '#f4f4f5',
-                    background: '#141418',
-                    border: '1px solid #222228',
-                    borderRadius: 8,
-                    boxSizing: 'border-box',
-                  }}
                 />
               </div>
-              <div style={{ marginBottom: 16 }}>
-                <label htmlFor="try-password" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#a1a1aa' }}>
-                  Password
-                </label>
+              <div className="ad-field">
+                <label htmlFor="try-password" className="ad-label">Password</label>
                 <input
                   id="try-password"
                   name="password"
@@ -298,60 +283,26 @@ export default function AdminImvuAccounts() {
                   autoComplete="new-password"
                   value={tryPassword}
                   onChange={(e) => setTryPassword(e.target.value)}
+                  className="ad-input"
                   placeholder="Password"
                   disabled={tryLoginLoading}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    minHeight: 40,
-                    padding: '8px 12px',
-                    fontSize: 16,
-                    color: '#f4f4f5',
-                    background: '#141418',
-                    border: '1px solid #222228',
-                    borderRadius: 8,
-                    boxSizing: 'border-box',
-                  }}
                 />
               </div>
-              <p style={{ marginTop: 16, marginBottom: 0 }}>
-                <button
-                  type="submit"
-                  disabled={tryLoginLoading}
-                  style={{
-                    display: 'inline-block',
-                    minWidth: 160,
-                    minHeight: 48,
-                    padding: '12px 24px',
-                    backgroundColor: '#8b5cf6',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontSize: 16,
-                    fontWeight: 600,
-                    cursor: tryLoginLoading ? 'wait' : 'pointer',
-                    fontFamily: 'inherit',
-                  }}
-                >
+              <div className="ad-actions">
+                <button type="submit" disabled={tryLoginLoading} className="ad-btn">
                   {tryLoginLoading ? 'Trying…' : 'Try login'}
                 </button>
-              </p>
+              </div>
             </form>
             {tryLoginResult && (
               <div className="mt-4 p-4 rounded bg-[var(--bg-secondary)] text-sm">
-                {tryLoginResult.message && <p className="text-[var(--text-muted)] mb-2">{tryLoginResult.message}</p>}
-                {tryLoginResult.results?.[0]?.status === 201 && (
-                  <p className="mb-2 text-green-600 dark:text-green-400 font-medium">Account saved automatically. Set it as active in the list below or add more accounts.</p>
-                )}
-                {tryLoginResult.results?.map((r, i) => (
-                  <div key={i} className="mb-3 p-2 rounded border border-[var(--border)]">
-                    <div><strong>{r.url}</strong> {r.status != null && <span>Status: {r.status}</span>} {r.error && <span className="text-red-500">{r.error}</span>}</div>
-                    {r.cookies?.length > 0 && (
-                      <pre className="mt-1 text-xs overflow-auto max-h-24">{r.cookies.join('\n')}</pre>
-                    )}
-                    {r.body != null && <pre className="mt-1 text-xs overflow-auto max-h-20">{JSON.stringify(r.body, null, 2)}</pre>}
-                  </div>
-                ))}
+                {tryLoginResult.results?.[0]?.status === 201 ? (
+                  <p className="text-[var(--free)] font-medium">Account saved. Set it as active in the list below.</p>
+                ) : tryLoginResult.results?.[0]?.error ? (
+                  <p className="text-[var(--danger)]">{tryLoginResult.results[0].error}</p>
+                ) : tryLoginResult.message ? (
+                  <p className="text-[var(--text-muted)]">{tryLoginResult.message}</p>
+                ) : null}
               </div>
             )}
           </div>
