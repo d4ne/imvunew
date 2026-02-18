@@ -3,32 +3,42 @@ name: Discord Patch Notes (Every Push)
 on:
   push:
     branches:
-      - main   # change if your branch is called master
+      - main
 
 jobs:
   notify:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get latest commit message
+        id: commit
+        run: |
+          echo "msg=$(git log -1 --pretty=%s)" >> $GITHUB_OUTPUT
+          echo "author=$(git log -1 --pretty=%an)" >> $GITHUB_OUTPUT
+          echo "url=$(git log -1 --pretty=%H)" >> $GITHUB_OUTPUT
+
       - name: Send Discord Embed Notification
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          AUTHOR="${{ github.actor }}"
+          COMMIT_MSG="${{ steps.commit.outputs.msg }}"
+          AUTHOR="${{ steps.commit.outputs.author }}"
+          HASH="${{ steps.commit.outputs.url }}"
           REPO="${{ github.repository }}"
-          COMMIT_URL="${{ github.event.head_commit.url }}"
 
           curl -H "Content-Type: application/json" \
           -d "{
-            \"username\": \"GitHub Actions\",
+            \"username\": \"GitHub Patch Notes\",
             \"embeds\": [{
-              \"title\": \"🚀 Push Update Notification!\",
-              \"description\": \"New changes pushed to **$REPO**.\",
+              \"title\": \"🚀 Push Update!\",
+              \"description\": \"New patch pushed to **$REPO**\",
               \"color\": 3447003,
               \"fields\": [
                 {
-                  \"name\": \"📌 Commit\",
+                  \"name\": \"📌 Commit Message\",
                   \"value\": \"$COMMIT_MSG\"
                 },
                 {
@@ -36,7 +46,7 @@ jobs:
                   \"value\": \"$AUTHOR\"
                 }
               ],
-              \"url\": \"$COMMIT_URL\"
+              \"url\": \"https://github.com/$REPO/commit/$HASH\"
             }]
           }" \
           $DISCORD_WEBHOOK
