@@ -4,10 +4,9 @@ import { AppConfig } from '../types/index.js';
 dotenv.config();
 
 const validateEnv = (): void => {
-  const required = ['IMVU_USER_ID', 'IMVU_AUTH_TOKEN'];
-  const missing = required.filter((key) => !process.env[key]);
-  if (missing.length > 0) {
-    console.warn(`Warning: Missing env: ${missing.join(', ')}. Set via headers/query if needed.`);
+  const hasImvuEnv = !!(process.env.IMVU_USER_ID && process.env.IMVU_AUTH_TOKEN);
+  if (!hasImvuEnv && process.env.NODE_ENV !== 'test') {
+    console.info('Optional: Set IMVU_USER_ID and IMVU_AUTH_TOKEN in .env, or add accounts in Admin → IMVU Accounts.');
   }
 };
 

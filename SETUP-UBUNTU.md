@@ -249,6 +249,39 @@ Open in browser: **http://YOUR_IP_OR_DOMAIN** (or https if you use SSL). Sign in
 
 ---
 
+## Troubleshooting: works on localhost, broken on Ubuntu
+
+**FAQ or IMVU Accounts (or other API pages) don’t load / show errors on production**
+
+1. **Wrong API URL in the frontend build**  
+   The production build must use the same origin for API calls. On the server, before running `npm run build`, ensure the **root** `.env` has an empty API URL:
+   ```bash
+   cd /var/www/imvuweb
+   echo 'VITE_API_URL=' > .env
+   npm run build
+   ```
+   Then redeploy (copy new `dist/` or run your usual deploy). If you had `VITE_API_URL=http://localhost:3000` when building, the browser would try to call localhost from the user’s machine and fail.
+
+2. **Not logged in on the production URL**  
+   IMVU Accounts (and other admin/authenticated routes) need a session. Log in with Discord **on the production site** (e.g. `http://87.106.23.37`), not on localhost. The cookie is per-origin.
+
+3. **Check what the server returns**  
+   In the browser: DevTools → Network, open FAQ or IMVU Accounts, then check the failing request (e.g. `api/docs` or `api/imvu-accounts`):
+   - **401** → Not logged in on this origin, or cookie not sent. Log in again on the production URL; ensure `FRONTEND_URL` in `server/.env` is exactly that URL (no trailing slash).
+   - **503** → Database not configured or tables missing. Set `DATABASE_URL` in `server/.env`, run `npm run db:push` in `server/`, then `pm2 restart xanoty-api`.
+   - **500** → See `pm2 logs xanoty-api` for the stack trace.
+
+4. **Tables “already in sync” but app still says table missing**  
+   Force-recreate tables (this **wipes DB data**):
+   ```bash
+   cd /var/www/imvuweb/server
+   npx prisma db push --force-reset
+   pm2 restart xanoty-api
+   ```
+   Only use this if you’re sure the DB can be reset.
+
+---
+
 ## Updating after `git pull`
 
 ```bash
